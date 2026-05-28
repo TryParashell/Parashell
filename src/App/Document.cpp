@@ -2032,7 +2032,7 @@ bool Document::saveToFile(const char* filename) const
             throw Base::FileException("Failed to open file", tmp);
         }
 
-        writer.setComment("FreeCAD Document");
+        writer.setComment("Parashell Document");
         writer.setLevel(compression);
         writer.putNextEntry("Document.xml");
 
@@ -2042,7 +2042,7 @@ bool Document::saveToFile(const char* filename) const
 
         writer.Stream() << "<?xml version='1.0' encoding='utf-8'?>" << '\n'
                         << "<!--" << '\n'
-                        << " FreeCAD Document, see https://www.freecad.org for more information..."
+                        << " Parashell Document"
                         << '\n'
                         << "-->" << '\n';
         Document::Save(writer);

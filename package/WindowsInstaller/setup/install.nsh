@@ -12,7 +12,7 @@ Installation of program files, dictionaries and external components
 
 Section -ProgramFiles SecProgramFiles
 
-  # if the $INSTDIR does not contain "FreeCAD" we must add a subfolder to avoid that FreeCAD will e.g.
+  # if the $INSTDIR does not contain "Parashell" we must add a subfolder to avoid that Parashell will e.g.
   # be installed directly to C:\programs - the uninstaller will then delete the whole
   # C:\programs directory
   StrCpy $String "$INSTDIR"
@@ -27,7 +27,7 @@ Section -ProgramFiles SecProgramFiles
   # to $INSTDIR must have a valid path before logging can be turned on
   LogSet on
 
-  # Install and register the core FreeCAD files
+  # Install and register the core Parashell files
   
   # Initializes the plug-ins dir ($PLUGINSDIR) if not already initialized.
   # $PLUGINSDIR is automatically deleted when the installer exits.

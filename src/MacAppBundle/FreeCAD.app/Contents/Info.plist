@@ -40,9 +40,9 @@
 				<string>public.data</string>
 			</array>
 			<key>UTTypeDescription</key>
-			<string>FreeCAD Document</string>
+			<string>Parashell Document</string>
 			<key>UTTypeIdentifier</key>
-			<string>org.freecad.fcstd</string>
+			<string>app.parashell.fcstd</string>
 			<key>UTTypeTagSpecification</key>
 			<dict>
 				<key>public.filename-extension</key>

@@ -167,7 +167,7 @@ void SoFCOffscreenRenderer::writeToImageFile(
             // set keywords for PNG format
             if (file.hasExtension("PNG")) {
                 img.setText(QLatin1String("Title"), QString::fromUtf8(filename));
-                img.setText(QLatin1String("Author"), QLatin1String("FreeCAD (https://www.freecad.org)"));
+                img.setText(QLatin1String("Author"), QLatin1String("Parashell (https://parashell.cloud)"));
                 if (strcmp(comment, "") == 0) {
                     img.setText(
                         QLatin1String("Description"),

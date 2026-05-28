@@ -2538,7 +2538,7 @@ void parseProgramOptions(int ac, char ** av, const std::string& exe, boost::prog
     if (vm.contains("help")) {
         std::stringstream str;
         str << exe << '\n' << '\n';
-        str << "For a detailed description see https://www.freecad.org/wiki/Start_up_and_Configuration" << '\n'<<'\n';
+        str << "For details about Parashell, please refer to the project documentation." << '\n'<<'\n';
         str << "Usage: " << exe << " [options] File1 File2 ..." << '\n' << '\n';
         str << visible << '\n';
         throw Base::ProgramInformation(str.str());
@@ -2869,7 +2869,7 @@ void Application::initConfig(int argc, char ** argv)
                               mConfig["BuildRevision"].c_str());
 
         if (SafeMode::SafeModeEnabled()) {
-            Base::Console().message("FreeCAD is running in _SAFE_MODE_.\n"
+            Base::Console().message("Parashell is running in _SAFE_MODE_.\n"
                               "Safe mode temporarily disables your configurations and "
                               "addons. Restart the application to exit safe mode.\n\n");
         }

@@ -1808,7 +1808,7 @@ void MainWindow::delayedStartup()
         auto safeModePopup = QMessageBox(
             QMessageBox::Information,
             tr("Safe mode enabled"),
-            tr("FreeCAD is now running in safe mode."),
+            tr("Parashell is now running in safe mode."),
             QMessageBox::Ok
         );
         safeModePopup.setInformativeText(

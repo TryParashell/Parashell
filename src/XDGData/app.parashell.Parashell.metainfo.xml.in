@@ -50,9 +50,9 @@
     <keyword>part</keyword>
     <keyword translate="no">coin</keyword>
   </keywords>
-  <url type="homepage">https://parashell.app/</url>
-  <url type="bugtracker">https://parashell.app/issues</url>
-  <url type="help">https://parashell.app/docs</url>
+  <url type="homepage">https://parashell.cloud/</url>
+  <url type="bugtracker">https://parashell.cloud/issues</url>
+  <url type="help">https://parashell.cloud/docs</url>
   <content_rating type="oars-1.1"/>
   <releases>
     <release version="@PACKAGE_VERSION@" date="@APPDATA_RELEASE_DATE@"/>

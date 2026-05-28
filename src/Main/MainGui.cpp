@@ -58,8 +58,8 @@
 void PrintInitHelp();
 
 const auto sBanner = fmt::format(
-    "(C) 2001-{} FreeCAD contributors\n"
-    "FreeCAD is free and open-source software licensed under the terms of LGPL2+ license.\n\n",
+    "(C) 2001-{} Parashell contributors\n"
+    "Parashell is open-source software licensed under the terms of LGPL2+ license.\n\n",
     FCCopyrightYear
 );
 
@@ -196,10 +196,10 @@ int main(int argc, char** argv)
 #endif
 
     // Name and Version of the Application
-    App::Application::Config()["ExeName"] = "FreeCAD";
-    App::Application::Config()["ExeVendor"] = "FreeCAD";
+    App::Application::Config()["ExeName"] = "Parashell";
+    App::Application::Config()["ExeVendor"] = "Parashell";
     App::Application::Config()["AppDataSkipVendor"] = "true";
-    App::Application::Config()["MaintainerUrl"] = "https://freecad.org";
+    App::Application::Config()["MaintainerUrl"] = "https://parashell.cloud";
 
     // set the banner (for logging and console)
     App::Application::Config()["CopyrightInfo"] = sBanner;
@@ -215,7 +215,7 @@ int main(int argc, char** argv)
     App::Application::Config()["SplashWarningColor"] = "#CA333B";
     App::Application::Config()["SplashInfoColor"] = "#000000";
     App::Application::Config()["SplashInfoPosition"] = "6,75";
-    App::Application::Config()["DesktopFileName"] = "org.freecad.FreeCAD";
+    App::Application::Config()["DesktopFileName"] = "app.parashell.Parashell";
 
     try {
         // Init phase ===========================================================

@@ -576,7 +576,7 @@ void StdCmdOnlineHelpWebsite::activated(int iMsg)
 {
     Q_UNUSED(iMsg);
     std::string defaulturl
-        = QCoreApplication::translate(this->className(), "https://wiki.freecad.org/Online_Help_Toc")
+        = QCoreApplication::translate(this->className(), "https://parashell.cloud/docs")
               .toStdString();
     ParameterGrp::handle hURLGrp = App::GetApplication().GetParameterGroupByPath(
         "User parameter:BaseApp/Preferences/Websites"
@@ -596,8 +596,8 @@ StdCmdFreeCADDonation::StdCmdFreeCADDonation()
     : Command("Std_FreeCADDonation")
 {
     sGroup = "Help";
-    sMenuText = QT_TR_NOOP("Donate to FreeCA&D");
-    sToolTipText = QT_TR_NOOP("Opens the FreeCAD donation page");
+    sMenuText = QT_TR_NOOP("&Donate");
+    sToolTipText = QT_TR_NOOP("Opens the donation page");
     sWhatsThis = "Std_FreeCADDonation";
     sStatusTip = sToolTipText;
     sPixmap = "internet-web-browser";
@@ -610,7 +610,7 @@ void StdCmdFreeCADDonation::activated(int iMsg)
     ParameterGrp::handle hURLGrp = App::GetApplication().GetParameterGroupByPath(
         "User parameter:BaseApp/Preferences/Websites"
     );
-    std::string url = hURLGrp->GetASCII("DonatePage", "https://www.freecad.org/sponsor");
+    std::string url = hURLGrp->GetASCII("DonatePage", "https://parashell.cloud/donate");
     hURLGrp->SetASCII("DonatePage", url.c_str());
     OpenURLInBrowser(url.c_str());
 }
@@ -629,7 +629,7 @@ StdCmdDevHandbook::StdCmdDevHandbook()
     sGroup = "Help";
     sMenuText = QT_TR_NOOP("Developers Handbook");
 
-    sToolTipText = QT_TR_NOOP("Opens the FreeCAD developers handbook");
+    sToolTipText = QT_TR_NOOP("Opens the FreeCAD developers handbook (upstream reference)");
 
     sWhatsThis = "Std_DevHandbook";
     sStatusTip = sToolTipText;
@@ -660,8 +660,8 @@ StdCmdFreeCADWebsite::StdCmdFreeCADWebsite()
     : Command("Std_FreeCADWebsite")
 {
     sGroup = "Help";
-    sMenuText = QT_TR_NOOP("FreeCAD W&ebsite");
-    sToolTipText = QT_TR_NOOP("Navigates to the official FreeCAD website");
+    sMenuText = QT_TR_NOOP("Parashell W&ebsite");
+    sToolTipText = QT_TR_NOOP("Navigates to the official Parashell website");
     sWhatsThis = "Std_FreeCADWebsite";
     sStatusTip = sToolTipText;
     sPixmap = "internet-web-browser";
@@ -672,7 +672,7 @@ void StdCmdFreeCADWebsite::activated(int iMsg)
 {
     Q_UNUSED(iMsg);
     std::string defaulturl
-        = QCoreApplication::translate(this->className(), "https://www.freecad.org").toStdString();
+        = QCoreApplication::translate(this->className(), "https://parashell.cloud").toStdString();
     ParameterGrp::handle hURLGrp = App::GetApplication().GetParameterGroupByPath(
         "User parameter:BaseApp/Preferences/Websites"
     );
@@ -703,7 +703,7 @@ void StdCmdFreeCADUserHub::activated(int iMsg)
 {
     Q_UNUSED(iMsg);
     std::string defaulturl
-        = QCoreApplication::translate(this->className(), "https://wiki.freecad.org/User_hub")
+        = QCoreApplication::translate(this->className(), "https://parashell.cloud/docs")
               .toStdString();
     ParameterGrp::handle hURLGrp = App::GetApplication().GetParameterGroupByPath(
         "User parameter:BaseApp/Preferences/Websites"
@@ -723,8 +723,8 @@ StdCmdFreeCADForum::StdCmdFreeCADForum()
     : Command("Std_FreeCADForum")
 {
     sGroup = "Help";
-    sMenuText = QT_TR_NOOP("FreeCAD &Forum");
-    sToolTipText = QT_TR_NOOP("Opens the FreeCAD forum to find help from other users");
+    sMenuText = QT_TR_NOOP("Community &Forum");
+    sToolTipText = QT_TR_NOOP("Opens a community forum to find help from other users");
     sWhatsThis = "Std_FreeCADForum";
     sStatusTip = sToolTipText;
     sPixmap = "internet-web-browser";
@@ -735,7 +735,7 @@ void StdCmdFreeCADForum::activated(int iMsg)
 {
     Q_UNUSED(iMsg);
     std::string defaulturl
-        = QCoreApplication::translate(this->className(), "https://forum.freecad.org").toStdString();
+        = QCoreApplication::translate(this->className(), "https://parashell.cloud/community").toStdString();
     ParameterGrp::handle hURLGrp = App::GetApplication().GetParameterGroupByPath(
         "User parameter:BaseApp/Preferences/Websites"
     );
@@ -768,7 +768,7 @@ void StdCmdReportBug::activated(int iMsg)
     ParameterGrp::handle hURLGrp = App::GetApplication().GetParameterGroupByPath(
         "User parameter:BaseApp/Preferences/Websites"
     );
-    std::string url = hURLGrp->GetASCII("IssuesPage", "https://github.com/FreeCAD/FreeCAD/issues");
+    std::string url = hURLGrp->GetASCII("IssuesPage", "https://parashell.cloud/issues");
     hURLGrp->SetASCII("IssuesPage", url.c_str());
     OpenURLInBrowser(url.c_str());
 }
