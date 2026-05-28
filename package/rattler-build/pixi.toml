@@ -17,7 +17,7 @@ description = "Parashell"
 backend = { name = "pixi-build-rattler-build", version = "*" }
 
 [feature.freecad.dependencies]
-freecad = { path = "." }
+parashell = { path = "." }
 qt6-webengine = ">=6.8,<6.9"
 mcp = ">=1.27,<2.0"
 pillow = ">=12.2,<13.0"
