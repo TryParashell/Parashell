@@ -18,10 +18,21 @@ backend = { name = "pixi-build-rattler-build", version = "*" }
 
 [feature.freecad.dependencies]
 parashell = { path = "." }
-qt6-webengine = ">=6.8,<6.9"
 mcp = ">=1.27,<2.0"
 pillow = ">=12.2,<13.0"
 validators = ">=0.35,<1.0"
+
+[feature.freecad.target.linux-64.dependencies]
+qt6-webengine = ">=6.11,<6.12"
+
+[feature.freecad.target.linux-aarch64.dependencies]
+qt6-webengine = ">=6.11,<6.12"
+
+[feature.freecad.target.osx-arm64.dependencies]
+qt6-webengine = ">=6.11,<6.12"
+
+[feature.freecad.target.win-64.dependencies]
+qt6-webengine = ">=6.11,<6.12"
 
 [feature.package.dependencies]
 python = ">=3.11,<3.12"
