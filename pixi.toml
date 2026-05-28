@@ -1,7 +1,7 @@
 [workspace]
-name = "FreeCAD"
+name = "Parashell"
 version = "1.2.0"
-description = "pixi instructions for FreeCAD"
+description = "pixi instructions for Parashell"
 authors = ["looooo <sppedflyer@gmail.com>"]
 channels = ["conda-forge"]
 platforms = [ "linux-64", "linux-aarch64", "osx-64", "osx-arm64", "win-64" ]
