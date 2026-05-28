@@ -12,30 +12,30 @@ if(NOT DEFINED APPDATA_RELEASE_DATE)
 endif()
 
 configure_file(
-    org.freecad.FreeCAD.metainfo.xml.in
-    ${CMAKE_BINARY_DIR}/org.freecad.FreeCAD.metainfo.xml
+    app.parashell.Parashell.metainfo.xml.in
+    ${CMAKE_BINARY_DIR}/app.parashell.Parashell.metainfo.xml
 )
 install(
-    FILES ${CMAKE_BINARY_DIR}/org.freecad.FreeCAD.metainfo.xml
+    FILES ${CMAKE_BINARY_DIR}/app.parashell.Parashell.metainfo.xml
     DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/metainfo
 )
 
 install(
-    FILES org.freecad.FreeCAD.desktop
+    FILES app.parashell.Parashell.desktop
     DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/applications
 )
 
 install(
-    FILES org.freecad.FreeCAD.xml
+    FILES app.parashell.Parashell.xml
     DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/mime/packages
 )
 
 configure_file(
-    FreeCAD.thumbnailer.in
-    ${CMAKE_BINARY_DIR}/FreeCAD.thumbnailer
+    Parashell.thumbnailer.in
+    ${CMAKE_BINARY_DIR}/Parashell.thumbnailer
 )
 install(
-    FILES ${CMAKE_BINARY_DIR}/FreeCAD.thumbnailer
+    FILES ${CMAKE_BINARY_DIR}/Parashell.thumbnailer
     DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/thumbnailers
 )
 
