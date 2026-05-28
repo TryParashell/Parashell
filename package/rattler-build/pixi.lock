@@ -4284,7 +4284,7 @@ packages:
   size: 2550499
   timestamp: 1765632825351
 - conda: .
-  name: freecad
+  name: parashell
   version: 1.2.0dev
   build: h3c70cbc_0
   subdir: win-64
@@ -4346,7 +4346,7 @@ packages:
   - libwinpthread >=12.0.0.r4.gg4f2fc60ca
   - tbb >=2022.3.0
 - conda: .
-  name: freecad
+  name: parashell
   version: 1.2.0dev
   build: h6d4d2f9_0
   subdir: linux-aarch64
@@ -4409,7 +4409,7 @@ packages:
   - yaml-cpp >=0.8.0,<0.9.0a0
   - libzlib >=1.3.1,<2.0a0
 - conda: .
-  name: freecad
+  name: parashell
   version: 1.2.0dev
   build: h81b34b9_0
   subdir: linux-64
@@ -4473,7 +4473,7 @@ packages:
   - yaml-cpp >=0.8.0,<0.9.0a0
   - libzlib >=1.3.1,<2.0a0
 - conda: .
-  name: freecad
+  name: parashell
   version: 1.2.0dev
   build: hc347f7b_0
   subdir: osx-64
@@ -4534,7 +4534,7 @@ packages:
   - yaml-cpp >=0.8.0,<0.9.0a0
   - libzlib >=1.3.1,<2.0a0
 - conda: .
-  name: freecad
+  name: parashell
   version: 1.2.0dev
   build: he8ea13f_0
   subdir: osx-arm64
