@@ -22,6 +22,7 @@ requirements:
     - noqt5
     - python>=3.11,<3.12
     - qt6-main>=6.8,<6.9
+    - qt6-webengine>=6.8,<6.9
     - swig>=4.3,<4.4
 
     - if: linux and x86_64
@@ -117,6 +118,7 @@ requirements:
     - pyside6
     - python>=3.11,<3.12
     - qt6-main>=6.8,<6.9
+    - qt6-webengine>=6.8,<6.9
     - six
     - smesh
     - vtk
@@ -151,6 +153,7 @@ requirements:
     - lark
     - lxml
     - matplotlib-base
+    - mcp>=1.27,<2.0
     - nine
     - noqt5
     - numpy>=1.26,<2
@@ -159,6 +162,7 @@ requirements:
     - opencamlib
     - opencv
     - pandas
+    - pillow>=12.2,<13.0
     - pip
     - pivy
     - ply
@@ -168,10 +172,12 @@ requirements:
     - pythonocc-core
     - pyyaml
     - qt6-main>=6.8,<6.9
+    - qt6-webengine>=6.8,<6.9
     - requests
     - scipy
     - sympy
     - typing_extensions
+    - validators>=0.35,<1.0
     - vtk
     - xlutils
 
