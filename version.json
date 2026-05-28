@@ -1,5 +1,5 @@
 {
-  "name": "FreeCAD",
+  "name": "Parashell",
   "version_major": 1,
   "version_minor": 2,
   "version_patch": 0,
@@ -7,5 +7,5 @@
   "version_suffix": "dev",
   "version_suffix_note": "either 'dev' for development snapshot, 'RC1' etc. for release candidate, or empty string for release",
   "build_version": 0,
-  "build_version_note": "used when the same FreeCAD version is re-released (for example using an updated LibPack)"
+  "build_version_note": "used when the same Parashell version is re-released (for example using an updated LibPack)"
 }

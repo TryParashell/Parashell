@@ -7,11 +7,11 @@ platforms = ["linux-64", "linux-aarch64", "osx-64", "osx-arm64", "win-64"]
 preview = ["pixi-build"]
 
 [package]
-name = "freecad"
+name = "parashell"
 version = "1.2.0dev"
-homepage = "https://freecad.org"
-repository = "https://github.com/FreeCAD/FreeCAD"
-description = "FreeCAD"
+homepage = "https://www.parashell.cloud"
+repository = "https://www.parashell.cloud"
+description = "Parashell"
 
 [package.build]
 backend = { name = "pixi-build-rattler-build", version = "*" }

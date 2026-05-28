@@ -14,17 +14,17 @@
 %bcond_without debug_info
 
 
-Name:           freecad
+Name:           parashell
 Epoch:          1
 Version:        1.2.0~dev
 Release:        1%{?dist}
 
-Summary:        A general purpose 3D CAD modeler
+Summary:        A general purpose 3D CAD modeler (Parashell - FreeCAD derivative)
 Group:          Applications/Engineering
 License:        LGPL-2.0-or-later
-URL:            https://www.freecad.org/
+URL:            https://www.parashell.cloud/
 
-Source0:        freecad-sources.tar.gz
+Source0:        parashell-sources.tar.gz
 
 
 # Maintainers:  keep this list of plugins up to date
@@ -100,21 +100,21 @@ Recommends:     python3-pysolar IfcOpenShell-python3
 
 
 %description
-FreeCAD is a general purpose Open Source 3D CAD/MCAD/CAx/CAE/PLM modeler, aimed
+Parashell is a general purpose Open Source 3D CAD/MCAD/CAx/CAE/PLM modeler, aimed
 directly at mechanical engineering and product design but also fits a wider
 range of uses in engineering, such as architecture or other engineering
 specialities. It is a feature-based parametric modeler with a modular software
 architecture which makes it easy to provide additional functionality without
-modifying the core system.
+modifying the core system. Parashell is derived from the FreeCAD project.
 
 
 %package data
-Summary:        Data files for FreeCAD
+Summary:        Data files for Parashell
 BuildArch:      noarch
 Requires:       %{name} = %{epoch}:%{version}-%{release}
 
 %description data
-Data files for FreeCAD
+Data files for Parashell
 
 %package libondselsolver-devel
 Summary:        Development file for OndselSolver
@@ -222,7 +222,7 @@ Development file for OndselSolver
     fi
 %endif
 
-    desktop-file-validate %{buildroot}%{_datadir}/applications/org.freecad.FreeCAD.desktop
+    desktop-file-validate %{buildroot}%{_datadir}/applications/app.parashell.Parashell.desktop
     %{?fedora:appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/*.metainfo.xml}
 
     # Bug maintainers to keep %%{plugins} macro up to date.
