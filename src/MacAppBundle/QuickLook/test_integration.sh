@@ -14,22 +14,22 @@ NC='\033[0m' # No Color
 
 # Test configuration
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-# Look for FreeCAD.app in common install locations
-if [[ -d "${SCRIPT_DIR}/../../../FreeCAD.app" ]]; then
-    FREECAD_APP="${SCRIPT_DIR}/../../../FreeCAD.app"
-elif [[ -d "${SCRIPT_DIR}/../../../../FreeCAD.app" ]]; then
-    FREECAD_APP="${SCRIPT_DIR}/../../../../FreeCAD.app"
+# Look for Parashell.app in common install locations
+if [[ -d "${SCRIPT_DIR}/../../../Parashell.app" ]]; then
+    FREECAD_APP="${SCRIPT_DIR}/../../../Parashell.app"
+elif [[ -d "${SCRIPT_DIR}/../../../../Parashell.app" ]]; then
+    FREECAD_APP="${SCRIPT_DIR}/../../../../Parashell.app"
 else
     # Default to relative path from script
-    FREECAD_APP="${SCRIPT_DIR}/../../../FreeCAD.app"
+    FREECAD_APP="${SCRIPT_DIR}/../../../Parashell.app"
 fi
 
 EXTENSIONS_DIR="${FREECAD_APP}/Contents/PlugIns"
 THUMBNAIL_EXT="${EXTENSIONS_DIR}/FreeCADThumbnailExtension.appex"
 PREVIEW_EXT="${EXTENSIONS_DIR}/FreeCADPreviewExtension.appex"
 
-THUMBNAIL_BUNDLE_ID="org.freecad.FreeCAD.quicklook.thumbnail"
-PREVIEW_BUNDLE_ID="org.freecad.FreeCAD.quicklook.preview"
+THUMBNAIL_BUNDLE_ID="app.parashell.Parashell.quicklook.thumbnail"
+PREVIEW_BUNDLE_ID="app.parashell.Parashell.quicklook.preview"
 
 # Function to print colored output
 print_status() {
@@ -72,10 +72,10 @@ main() {
         exit 1
     fi
 
-    # Test 2: Check if main FreeCAD executable exists
+    # Test 2: Check if main Parashell executable exists
     ((total_tests++))
-    if [[ -f "$FREECAD_APP/Contents/MacOS/FreeCAD" ]]; then
-        print_status "OK" "FreeCAD executable exists"
+    if [[ -f "$FREECAD_APP/Contents/MacOS/Parashell" ]]; then
+        print_status "OK" "Parashell executable exists"
         ((passed_tests++))
     else
         print_status "FAIL" "FreeCAD executable not found"
@@ -171,9 +171,9 @@ main() {
 
     # Test 12: Basic FreeCAD launch test
     ((total_tests++))
-    print_status "INFO" "Testing FreeCAD launch (--version)..."
-    if timeout 10 "$FREECAD_APP/Contents/MacOS/FreeCAD" --version >/dev/null 2>&1; then
-        print_status "OK" "FreeCAD launches successfully"
+    print_status "INFO" "Testing Parashell launch (--version)..."
+    if timeout 10 "$FREECAD_APP/Contents/MacOS/Parashell" --version >/dev/null 2>&1; then
+        print_status "OK" "Parashell launches successfully"
         ((passed_tests++))
     else
         print_status "FAIL" "FreeCAD failed to launch or crashed"
