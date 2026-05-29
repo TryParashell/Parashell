@@ -111,7 +111,7 @@ requirements:
     - matplotlib-base
     - noqt5
     - numpy>=1.26,<2
-    - occt>=7.9.3,<8
+    - occt>=7.6,<8
     - pcl
     - pivy
     - ply
@@ -153,7 +153,6 @@ requirements:
     - docutils
     - gmsh
     - graphviz
-    - ifcopenshell
     - lark
     - lxml
     - matplotlib-base
@@ -161,7 +160,7 @@ requirements:
     - nine
     - noqt5
     - numpy>=1.26,<2
-    - occt>=7.9.3,<8
+    - occt>=7.6,<8
     - olefile
     - opencamlib
     - opencv
@@ -188,6 +187,10 @@ requirements:
       then:
         - libspnav
         - qt6-wayland
+
+    - if: not (linux and aarch64)
+      then:
+        - ifcopenshell
 
     - if: not (osx and x86_64)
       then:
