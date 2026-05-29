@@ -34,7 +34,7 @@
 			<true/>
 			<key>QLSupportedContentTypes</key>
 			<array>
-				<string>org.freecad.fcstd</string>
+				<string>app.parashell.fcstd</string>
 			</array>
 			<key>QLSupportsSearchableItems</key>
 			<false/>
