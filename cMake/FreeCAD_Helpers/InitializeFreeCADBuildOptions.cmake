@@ -125,7 +125,7 @@ macro(InitializeFreeCADBuildOptions)
 
         if(FREECAD_CREATE_MAC_APP)
             install(
-                DIRECTORY ${CMAKE_SOURCE_DIR}/src/MacAppBundle/FreeCAD.app/
+                DIRECTORY ${CMAKE_SOURCE_DIR}/src/MacAppBundle/Parashell.app/
                 DESTINATION ${CMAKE_INSTALL_PREFIX}/${PROJECT_NAME}.app
             )
 
