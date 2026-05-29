@@ -1,4 +1,5 @@
-# FreeCAD Contribution Process (FCP)
+# As Parashell is a fork of FreeCAD, we use the FCP stated below:
+## FreeCAD Contribution Process (FCP)
 
 FreeCAD's contribution process is inspired by the Collective Code Construction Contract which itself is an evolution of the github.com Fork and Pull Model.
 
