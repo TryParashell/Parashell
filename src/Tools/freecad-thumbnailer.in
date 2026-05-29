@@ -9,9 +9,9 @@ Installation:
   and must have execution rights
     "$ sudo chmod +x /usr/bin/freecad-thumbnailer"
 
-- If a FreeCAD project file doesn't include a thumbnail the file org.freecad.FreeCAD.png is used.
+- If a Parashell project file doesn't include a thumbnail the file app.parashell.Parashell.png is used.
   Thus, the file src/Gui/Icons/freecad-icon-48.png must be installed.
-    "$ sudo cp freecad-icon-48.png /usr/share/icons/hicolor/48x48/apps/org.freecad.FreeCAD.png"
+    "$ sudo cp freecad-icon-48.png /usr/share/icons/hicolor/48x48/apps/app.parashell.Parashell.png"
 
 - The application/x-extension-fcstd MIME type should be registered
     Check that a corresponding /usr/share/mime/packages/freecad.xml file exists
@@ -40,7 +40,7 @@ import getopt
 opt, par = getopt.getopt(sys.argv[1:], "-s:")
 input_file = par[0]
 output_file = par[1]
-default_icon = "@CMAKE_INSTALL_DATAROOTDIR@/icons/hicolor/48x48/apps/org.freecad.FreeCAD.png"
+default_icon = "@CMAKE_INSTALL_DATAROOTDIR@/icons/hicolor/48x48/apps/app.parashell.Parashell.png"
 
 try:
     # Read compressed file
