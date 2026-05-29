@@ -3,7 +3,7 @@
 set -e
 set -x
 
-conda_env="FreeCAD.app/Contents/Resources"
+conda_env="Parashell.app/Contents/Resources"
 
 mkdir -p ${conda_env}
 
@@ -44,13 +44,13 @@ python ../scripts/fix_macos_lib_paths.py ${conda_env}/lib -r
 # build and install the launcher
 cmake -B build launcher
 cmake --build build
-mkdir -p FreeCAD.app/Contents/MacOS
-cp build/FreeCAD FreeCAD.app/Contents/MacOS/FreeCAD
+mkdir -p Parashell.app/Contents/MacOS
+cp build/Parashell Parashell.app/Contents/MacOS/Parashell
 
 # Add deployment target suffix to artifact name (e.g., "-macOS11" or "-macOS15")
 deploy_target="${MACOS_DEPLOYMENT_TARGET:-11.0}"
-version_name="FreeCAD_${BUILD_TAG}-macOS${deploy_target%%.*}-$(uname -m)"
-application_menu_name="FreeCAD_${BUILD_TAG}"
+version_name="Parashell_${BUILD_TAG}-macOS${deploy_target%%.*}-$(uname -m)"
+application_menu_name="Parashell_${BUILD_TAG}"
 
 echo -e "\################"
 echo -e "version_name:  ${version_name}"
@@ -74,8 +74,8 @@ cp Info.plist.template ${conda_env}/../Info.plist
 sed -i "s/FREECAD_BUNDLE_VERSION/${bundle_version}/" ${conda_env}/../Info.plist
 sed -i "s/APPLICATION_MENU_NAME/${application_menu_name}/" ${conda_env}/../Info.plist
 
-pixi list -e default > FreeCAD.app/Contents/packages.txt
-sed -i '1s/.*/\nLIST OF PACKAGES:/' FreeCAD.app/Contents/packages.txt
+pixi list -e default > Parashell.app/Contents/packages.txt
+sed -i '1s/.*/\nLIST OF PACKAGES:/' Parashell.app/Contents/packages.txt
 
 # move plugins into their final location (Library only exists for macOS < 15.0 builds)
 if [ -d "${conda_env}/Library" ]; then
@@ -89,27 +89,27 @@ fi
 
 if [[ "${MACOS_SIGN_RELEASE}" == "true" ]]; then
     # create the signed dmg
-    ../../scripts/macos_sign_and_notarize.zsh -p "FreeCAD" -k ${MACOS_SIGNING_KEY_ID} -o "${version_name}.dmg"
+    ../../scripts/macos_sign_and_notarize.zsh -p "Parashell" -k ${MACOS_SIGNING_KEY_ID} -n "Parashell.app" -o "${version_name}.dmg"
 else
     # Ad-hoc sign for local builds (required for QuickLook extensions to register)
-    if [ -d "FreeCAD.app/Contents/PlugIns" ]; then
+    if [ -d "Parashell.app/Contents/PlugIns" ]; then
         echo "Ad-hoc signing App Extensions with entitlements..."
         codesign --force --sign - \
             --entitlements ../../../src/MacAppBundle/QuickLook/modern/ThumbnailExtension.entitlements \
-            FreeCAD.app/Contents/PlugIns/FreeCADThumbnailExtension.appex
+            Parashell.app/Contents/PlugIns/FreeCADThumbnailExtension.appex
         codesign --force --sign - \
             --entitlements ../../../src/MacAppBundle/QuickLook/modern/PreviewExtension.entitlements \
-            FreeCAD.app/Contents/PlugIns/FreeCADPreviewExtension.appex
+            Parashell.app/Contents/PlugIns/FreeCADPreviewExtension.appex
     fi
     echo "Ad-hoc signing app bundle..."
-    codesign --force --sign - FreeCAD.app/Contents/packages.txt
-    if [ -f "FreeCAD.app/Contents/Library/QuickLook/QuicklookFCStd.qlgenerator/Contents/MacOS/QuicklookFCStd" ]; then
-        codesign --force --sign - FreeCAD.app/Contents/Library/QuickLook/QuicklookFCStd.qlgenerator/Contents/MacOS/QuicklookFCStd
+    codesign --force --sign - Parashell.app/Contents/packages.txt
+    if [ -f "Parashell.app/Contents/Library/QuickLook/QuicklookFCStd.qlgenerator/Contents/MacOS/QuicklookFCStd" ]; then
+        codesign --force --sign - Parashell.app/Contents/Library/QuickLook/QuicklookFCStd.qlgenerator/Contents/MacOS/QuicklookFCStd
     fi
-    codesign --force --sign - FreeCAD.app
+    codesign --force --sign - Parashell.app
 
     # create the dmg
-    dmgbuild -s dmg_settings.py "FreeCAD" "${version_name}.dmg"
+    dmgbuild -s dmg_settings.py "Parashell" "${version_name}.dmg"
 fi
 
 # create hash

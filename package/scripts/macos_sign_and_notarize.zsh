@@ -4,11 +4,11 @@
 
 # Default values
 SIGNING_KEY_ID="${FREECAD_SIGNING_KEY_ID}"
-KEYCHAIN_PROFILE="FreeCAD"
+KEYCHAIN_PROFILE="Parashell"
 CONTAINING_FOLDER="."
-APP_NAME="FreeCAD.app"
-VOLUME_NAME="FreeCAD"
-DMG_NAME="FreeCAD-macOS-$(uname -m).dmg"
+APP_NAME="Parashell.app"
+VOLUME_NAME="Parashell"
+DMG_NAME="Parashell-macOS-$(uname -m).dmg"
 DMG_SETTINGS="dmg_settings.py"
 
 # Function to display usage information
@@ -18,7 +18,7 @@ function usage {
     echo "                [-v|--volume-name <volume_name>] [-o|--output <image_name.dmg>]"
     echo "                [-s|--dmg-settings <dmg_settings.py>]"
     echo
-    echo "This script signs and notarizes a FreeCAD.app bundle. It expects that the bundle is in a folder"
+    echo "This script signs and notarizes a Parashell.app bundle. It expects that the bundle is in a folder"
     echo "by itself (that folder will be used as the basis for the created disk image file, so anything"
     echo "else in it will become part of the image). That folder should be located in the same folder as"
     echo "this script."

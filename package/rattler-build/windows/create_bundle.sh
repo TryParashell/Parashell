@@ -5,7 +5,7 @@ set -x
 
 conda_env="$(pwd)/../.pixi/envs/default/"
 
-copy_dir="FreeCAD_Windows"
+copy_dir="Parashell_Windows"
 mkdir -p ${copy_dir}/bin
 
 # Copy Conda's Python and (U)CRT to FreeCAD/bin
@@ -50,15 +50,19 @@ set +x
 echo '[Paths]' >> ${copy_dir}/bin/qt6.conf
 echo 'Prefix = ../lib/qt6' >> ${copy_dir}/bin/qt6.conf
 
+# Rebrand the user-facing executables to Parashell (installer expects bin\Parashell.exe)
+mv ${copy_dir}/bin/FreeCAD.exe ${copy_dir}/bin/Parashell.exe
+mv ${copy_dir}/bin/FreeCADCmd.exe ${copy_dir}/bin/ParashellCmd.exe
+
 # convenient shortcuts to run the binaries
 if [ -x /c/ProgramData/chocolatey/tools/shimgen.exe ]; then
     pushd ${copy_dir}
-    /c/ProgramData/chocolatey/tools/shimgen.exe -p bin/freecadcmd.exe -i "$(pwd)/../../../WindowsInstaller/icons/FreeCAD.ico" -o "$(pwd)/FreeCADCmd.exe"
-    /c/ProgramData/chocolatey/tools/shimgen.exe --gui -p bin/freecad.exe -i "$(pwd)/../../../WindowsInstaller/icons/FreeCAD.ico" -o "$(pwd)/FreeCAD.exe"
+    /c/ProgramData/chocolatey/tools/shimgen.exe -p bin/ParashellCmd.exe -i "$(pwd)/../../../WindowsInstaller/icons/FreeCAD.ico" -o "$(pwd)/ParashellCmd.exe"
+    /c/ProgramData/chocolatey/tools/shimgen.exe --gui -p bin/Parashell.exe -i "$(pwd)/../../../WindowsInstaller/icons/FreeCAD.ico" -o "$(pwd)/Parashell.exe"
     popd
 fi
 
-version_name="FreeCAD_${BUILD_TAG}-Windows-$(uname -m)"
+version_name="Parashell_${BUILD_TAG}-Windows-$(uname -m)"
 
 echo -e "################"
 echo -e "version_name:  ${version_name}"
@@ -117,7 +121,7 @@ if [[ "${WINDOWS_SIGN_RELEASE:-0}" == "1" ]]; then
     done
 
     # Manually check the important one!
-    signtool verify -pa "$SIGN_DIR/bin/FreeCAD.exe"
+    signtool verify -pa "$SIGN_DIR/bin/Parashell.exe"
 
     echo "Signing completed."
   else
