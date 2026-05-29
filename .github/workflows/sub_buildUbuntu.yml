@@ -164,7 +164,7 @@ jobs:
         run: |
           ccache -s
 
-      - name: FreeCAD CLI tests on build dir
+      - name: Parashell CLI tests on build dir
         if: inputs.testOnBuildDir
         timeout-minutes: 10
         uses: ./.github/workflows/actions/runPythonTests
@@ -174,7 +174,7 @@ jobs:
           logFile: ${{ env.logdir }}TestCLIBuild.log
           reportFile: ${{env.reportdir}}${{ env.reportfilename }}
 
-      - name: FreeCAD GUI tests on build dir
+      - name: Parashell GUI tests on build dir
         if: inputs.testOnBuildDir
         timeout-minutes: 15
         uses: ./.github/workflows/actions/runPythonTests
@@ -221,7 +221,7 @@ jobs:
           errorFile: ${{ env.logdir }}InstallErrors.log
           reportFile: ${{env.reportdir}}${{ env.reportfilename }}
 
-      - name: FreeCAD CLI tests on install
+      - name: Parashell CLI tests on install
         timeout-minutes: 10
         uses: ./.github/workflows/actions/runPythonTests
         with:
@@ -230,7 +230,7 @@ jobs:
           logFile: ${{ env.logdir }}TestCLIInstall.log
           reportFile: ${{env.reportdir}}${{ env.reportfilename }}
 
-      - name: FreeCAD GUI tests on install
+      - name: Parashell GUI tests on install
         timeout-minutes: 15
         uses: ./.github/workflows/actions/runPythonTests
         with:

@@ -183,7 +183,7 @@ jobs:
         run: |
           . ${{ env.builddir }}\tests\Release\Tests_run --gtest_output=json:${{ env.reportdir }}gtest_results.json # 2>&1 | tee -filepath ${{ env.logdir }}\unitTests.log
 
-      - name: FreeCAD CLI tests
+      - name: Parashell CLI tests
         if: "!inputs.skipBuild"
         run: |
           . ${{ env.builddir }}\bin\FreeCADCmd -t 0 # 2>&1 | tee -filepath ${{ env.logdir }}\integrationTests.log

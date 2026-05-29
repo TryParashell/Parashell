@@ -182,7 +182,7 @@ jobs:
       run: |
         pixi run ccache -s
 
-    - name: FreeCAD CLI tests on build dir
+    - name: Parashell CLI tests on build dir
       if: inputs.testOnBuildDir && !inputs.skipBuild
       timeout-minutes: 10
       uses: ./.github/workflows/actions/runPythonTests
@@ -192,7 +192,7 @@ jobs:
         logFile: ${{ env.logdir }}TestCLIBuild.log
         reportFile: ${{env.reportdir}}${{ env.reportfilename }}
 
-    - name: FreeCAD GUI tests on build dir
+    - name: Parashell GUI tests on build dir
       if: runner.os == 'Linux' && inputs.testOnBuildDir && !inputs.skipBuild
       timeout-minutes: 15
       uses: ./.github/workflows/actions/runPythonTests
@@ -240,7 +240,7 @@ jobs:
       run: |
         pixi run install-${{ env.config }}
 
-    - name: FreeCAD CLI tests on install
+    - name: Parashell CLI tests on install
       if: runner.os != 'Windows' && !inputs.skipBuild
       timeout-minutes: 10
       uses: ./.github/workflows/actions/runPythonTests
@@ -250,7 +250,7 @@ jobs:
         logFile: ${{ env.logdir }}TestCLIInstall.log
         reportFile: ${{env.reportdir}}${{ env.reportfilename }}
 
-    - name: FreeCAD GUI tests on install
+    - name: Parashell GUI tests on install
       # if: runner.os == 'Linux' && !inputs.skipBuild
       # currently broken on Qt6 builds
       if: false
