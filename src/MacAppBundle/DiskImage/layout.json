@@ -2,7 +2,7 @@
 
   "title": "Parashell",
 
-  "icon": "../FreeCAD.app/Contents/Resources/freecad.icns",
+  "icon": "../Parashell.app/Contents/Resources/freecad.icns",
 
   "icon-size": 80,
 
@@ -10,7 +10,7 @@
 
   "contents": [
 
-    { "x": 250, "y": 150, "type": "file", "path": "/usr/local/FreeCAD.app" },
+    { "x": 250, "y": 150, "type": "file", "path": "/usr/local/Parashell.app" },
     { "x": 475, "y": 150, "type": "link", "path": "/Applications" }
 
   ],
