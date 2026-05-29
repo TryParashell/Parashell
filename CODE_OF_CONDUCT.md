@@ -1,4 +1,5 @@
-# FreeCAD Project Code of Conduct
+# As Parashell is a fork of FreeCAD, we use the FreeCAD Project Code of Conduct stated below:
+## FreeCAD Project Code of Conduct
 
 ## Statement
 
