@@ -29,9 +29,9 @@ rm -rf ${conda_env}/bin_tmp
 sed -i '1s|.*|#!/usr/bin/env python|' ${conda_env}/bin/pip
 
 echo -e "\nCopying Icon and Desktop file"
-cp ${conda_env}/share/applications/org.freecad.FreeCAD.desktop AppDir/
-sed -i 's/Exec=FreeCAD/Exec=AppRun/g' AppDir/org.freecad.FreeCAD.desktop
-cp ${conda_env}/share/icons/hicolor/scalable/apps/org.freecad.FreeCAD.svg AppDir/
+cp ${conda_env}/share/applications/app.parashell.Parashell.desktop AppDir/
+sed -i 's/Exec=Parashell/Exec=AppRun/g' AppDir/app.parashell.Parashell.desktop
+cp ${conda_env}/share/icons/hicolor/scalable/apps/org.freecad.FreeCAD.svg AppDir/app.parashell.Parashell.svg
 
 # Remove __pycache__ folders and .pyc files
 find . -path "*/__pycache__/*" -delete
