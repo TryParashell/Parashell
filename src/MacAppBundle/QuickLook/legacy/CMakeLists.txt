@@ -7,7 +7,7 @@ cmake_minimum_required(VERSION 3.22)
 # CMAKE_OSX_DEPLOYMENT_TARGET
 
 # Paths (inherited from parent)
-set(TARGET_APP_BUNDLE "${CMAKE_BINARY_DIR}/src/MacAppBundle/FreeCAD.app")
+set(TARGET_APP_BUNDLE "${CMAKE_BINARY_DIR}/src/MacAppBundle/Parashell.app")
 set(LEGACY_QUICKLOOK_DIR "${TARGET_APP_BUNDLE}/Contents/Library/QuickLook")
 
 # Build legacy QuickLook generator as a proper macOS plugin bundle

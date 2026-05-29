@@ -67,8 +67,8 @@ if(NOT BUILD_MODERN_EXTENSIONS AND NOT BUILD_LEGACY_GENERATOR)
 endif()
 
 # Global configuration
-set(FREECAD_BUNDLE_ID "org.freecad.FreeCAD")
-set(TARGET_APP_BUNDLE "${CMAKE_BINARY_DIR}/src/MacAppBundle/FreeCAD.app")
+set(FREECAD_BUNDLE_ID "app.parashell.Parashell")
+set(TARGET_APP_BUNDLE "${CMAKE_BINARY_DIR}/src/MacAppBundle/Parashell.app")
 
 # Detect target architecture
 if(CMAKE_SYSTEM_PROCESSOR STREQUAL "arm64" OR CMAKE_OSX_ARCHITECTURES STREQUAL "arm64")

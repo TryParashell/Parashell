@@ -25,12 +25,12 @@ endif()
 message(STATUS "Modern QuickLook: Using macOS SDK: ${MACOS_SDK_PATH}")
 
 # Bundle identifiers (inherited from parent)
-set(FREECAD_BUNDLE_ID "org.freecad.FreeCAD")
+set(FREECAD_BUNDLE_ID "app.parashell.Parashell")
 set(THUMBNAIL_BUNDLE_ID "${FREECAD_BUNDLE_ID}.quicklook.thumbnail")
 set(PREVIEW_BUNDLE_ID "${FREECAD_BUNDLE_ID}.quicklook.preview")
 
 # Paths (inherited from parent)
-set(TARGET_APP_BUNDLE "${CMAKE_BINARY_DIR}/src/MacAppBundle/FreeCAD.app")
+set(TARGET_APP_BUNDLE "${CMAKE_BINARY_DIR}/src/MacAppBundle/Parashell.app")
 set(EXTENSIONS_DIR "${TARGET_APP_BUNDLE}/Contents/PlugIns")
 
 # Build directories
