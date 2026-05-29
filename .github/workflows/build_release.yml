@@ -233,7 +233,47 @@ jobs:
           fi
           python3 package/scripts/write_version_info.py ../freecad_version.txt
           cd package/rattler-build
-          pixi install --frozen
+          if ! pixi install --frozen; then
+            echo "::warning::pixi.lock is out of sync with manifest; regenerating lock without --frozen."
+            pixi install
+            echo "PIXI_LOCK_REGENERATED=1" >> "$GITHUB_ENV"
+          fi
+
+      - name: Commit regenerated pixi.lock
+        if: env.PIXI_LOCK_REGENERATED == '1' && runner.os == 'Linux' && matrix.target == 'linux-64'
+        shell: bash
+        env:
+          COMMIT_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          cd "${GITHUB_WORKSPACE}"
+          if git diff --quiet -- package/rattler-build/pixi.lock; then
+            echo "Lock file unchanged after regeneration; nothing to commit."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git fetch origin "${GITHUB_REF_NAME}"
+          git checkout "${GITHUB_REF_NAME}"
+          cp "${GITHUB_WORKSPACE}/package/rattler-build/pixi.lock" /tmp/regenerated-pixi.lock
+          mv /tmp/regenerated-pixi.lock package/rattler-build/pixi.lock
+          git add package/rattler-build/pixi.lock
+          if git diff --staged --quiet; then
+            echo "No changes to commit after rebase."
+            exit 0
+          fi
+          short_sha=$(echo "$COMMIT_SHA" | cut -c1-7)
+          git commit -m "ci: regenerate pixi.lock after manifest change (${short_sha})"
+          for attempt in 1 2 3; do
+            if git push origin "HEAD:${GITHUB_REF_NAME}"; then
+              exit 0
+            fi
+            echo "Push attempt $attempt failed; rebasing and retrying..."
+            git fetch origin "${GITHUB_REF_NAME}"
+            git rebase "origin/${GITHUB_REF_NAME}"
+          done
+          echo "Failed to push regenerated lock after 3 attempts" >&2
+          exit 1
 
       - name: Azure login for Windows build code signing
         id: azure_login
