@@ -2,7 +2,7 @@ context:
   version: "1.2.0dev"
 
 package:
-  name: parashell
+  name: freecad
   version: "${{ version }}"
 
 source:
@@ -21,12 +21,8 @@ requirements:
     - ninja
     - noqt5
     - python>=3.11,<3.12
-    - qt6-main>=6.11,<6.12
-    - swig>=4.4,<4.5
-
-    - if: not (osx and x86_64)
-      then:
-        - qt6-webengine>=6.11,<6.12
+    - qt6-main>=6.8,<6.9
+    - swig>=4.3,<4.4
 
     - if: linux and x86_64
       then:
@@ -56,6 +52,7 @@ requirements:
         - pixman-cos7-x86_64
         - sed
         - sysroot_linux-64
+        - xcb-util-cursor==0.1.5  ## hack to address https://github.com/FreeCAD/FreeCAD/issues/26726
         - xorg-x11-server-common-cos7-x86_64
         - xorg-x11-server-xvfb-cos7-x86_64
         - xorg-xproto
@@ -88,6 +85,7 @@ requirements:
         - pixman-cos7-aarch64
         - sed
         - sysroot_linux-aarch64
+        - xcb-util-cursor==0.1.5  ## hack to address https://github.com/FreeCAD/FreeCAD/issues/26726
         - xorg-x11-server-common-cos7-aarch64
         - xorg-x11-server-xvfb-cos7-aarch64
         - xorg-xproto
@@ -111,24 +109,20 @@ requirements:
     - matplotlib-base
     - noqt5
     - numpy>=1.26,<2
-    - occt>=7.6,<8
+    - occt>=7.8,<7.9
     - pcl
     - pivy
     - ply
     - pybind11
     - pyside6
     - python>=3.11,<3.12
-    - qt6-main>=6.11,<6.12
+    - qt6-main>=6.8,<6.9
     - six
     - smesh
     - vtk
     - xerces-c
     - yaml-cpp
     - zlib
-
-    - if: not (osx and x86_64)
-      then:
-        - qt6-webengine>=6.11,<6.12
 
     - if: win
       then:
@@ -153,6 +147,7 @@ requirements:
     - docutils
     - gmsh
     - graphviz
+    - ifcopenshell
     - lark
     - lxml
     - matplotlib-base
@@ -160,7 +155,7 @@ requirements:
     - nine
     - noqt5
     - numpy>=1.26,<2
-    - occt>=7.6,<8
+    - occt>=7.8,<7.9
     - olefile
     - opencamlib
     - opencv
@@ -174,7 +169,7 @@ requirements:
     - python>=3.11,<3.12
     - pythonocc-core
     - pyyaml
-    - qt6-main>=6.11,<6.12
+    - qt6-main>=6.8,<6.9
     - requests
     - scipy
     - sympy
@@ -187,11 +182,4 @@ requirements:
       then:
         - libspnav
         - qt6-wayland
-
-    - if: not (linux and aarch64)
-      then:
-        - ifcopenshell
-
-    - if: not (osx and x86_64)
-      then:
-        - qt6-webengine>=6.11,<6.12
+        - xcb-util-cursor==0.1.5  ## hack to address https://github.com/FreeCAD/FreeCAD/issues/26726

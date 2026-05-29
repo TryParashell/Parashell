@@ -160,7 +160,6 @@ jobs:
         with:
           pixi-version: v0.59.0
           cache: false
-          run-install: false
 
       - name: Install the Apple certificate and provisioning profile
         id: macos_get_cert
@@ -227,7 +226,6 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           TARGET_PLATFORM: ${{ matrix.target }}
           BUILD_TAG: ${{ needs.upload_src.outputs.build_tag }}
-          EVENT_NAME: ${{ github.event_name }}
         run: |
           set -euo pipefail
           if [[ "${{ runner.os }}" == "macOS" ]]; then
@@ -235,57 +233,7 @@ jobs:
           fi
           python3 package/scripts/write_version_info.py ../freecad_version.txt
           cd package/rattler-build
-          if pixi install --frozen; then
-            exit 0
-          fi
-          if [[ "$EVENT_NAME" == "release" ]]; then
-            echo "::error::pixi.lock is out of sync with the manifest, but this is a release build. Refusing to mutate a tagged release. Regenerate the lock on main first." >&2
-            exit 1
-          fi
-          echo "::warning::pixi.lock out of sync with manifest; regenerating without --frozen."
-          pixi install
-          echo "PIXI_LOCK_REGENERATED=1" >> "$GITHUB_ENV"
-
-      - name: Commit regenerated pixi.lock
-        if: env.PIXI_LOCK_REGENERATED == '1' && runner.os == 'Linux' && matrix.target == 'linux-64' && github.event_name != 'release'
-        shell: bash
-        env:
-          COMMIT_SHA: ${{ github.sha }}
-          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
-        run: |
-          set -euo pipefail
-          cd "${GITHUB_WORKSPACE}"
-          if git diff --quiet -- package/rattler-build/pixi.lock; then
-            echo "Lock file unchanged after regeneration; nothing to commit."
-            exit 0
-          fi
-          target_branch="${GITHUB_REF_NAME:-$DEFAULT_BRANCH}"
-          if [[ -z "$target_branch" ]]; then
-            target_branch="$DEFAULT_BRANCH"
-          fi
-          cp package/rattler-build/pixi.lock /tmp/regenerated-pixi.lock
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git fetch origin "$target_branch"
-          git checkout -B "$target_branch" "origin/$target_branch"
-          mv /tmp/regenerated-pixi.lock package/rattler-build/pixi.lock
-          git add package/rattler-build/pixi.lock
-          if git diff --staged --quiet; then
-            echo "No lock-file delta versus origin/$target_branch; nothing to commit."
-            exit 0
-          fi
-          short_sha=$(echo "$COMMIT_SHA" | cut -c1-7)
-          git commit -m "ci: regenerate pixi.lock after manifest change (${short_sha})"
-          for attempt in 1 2 3; do
-            if git push origin "HEAD:$target_branch"; then
-              exit 0
-            fi
-            echo "Push attempt $attempt failed; rebasing and retrying..."
-            git fetch origin "$target_branch"
-            git rebase "origin/$target_branch"
-          done
-          echo "Failed to push regenerated lock after 3 attempts" >&2
-          exit 1
+          pixi install --frozen
 
       - name: Azure login for Windows build code signing
         id: azure_login
