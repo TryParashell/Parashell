@@ -2035,6 +2035,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/win-64/vs2022_win-64-19.44.35207-ha74f236_38.conda
       - conda: https://conda.anaconda.org/conda-forge/win-64/vtk-9.3.1-qt_py311h85ceb33_216.conda
       - conda: https://conda.anaconda.org/conda-forge/win-64/vtk-base-9.3.1-qt_py311h1fd4e03_216.conda
+      - conda: https://conda.anaconda.org/conda-forge/win-64/winpthreads-devel-12.0.0.r4.gg4f2fc60ca-h57928b3_10.conda
       - conda: https://conda.anaconda.org/conda-forge/win-64/x264-1!164.3095-h8ffe710_2.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/win-64/x265-3.5-h2d74725_3.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/win-64/xerces-c-3.3.0-hac47afa_1.conda
@@ -24265,6 +24266,15 @@ packages:
   - pkg:pypi/vtk?source=hash-mapping
   size: 34778027
   timestamp: 1740059459070
+- conda: https://conda.anaconda.org/conda-forge/win-64/winpthreads-devel-12.0.0.r4.gg4f2fc60ca-h57928b3_10.conda
+  sha256: d640e8ef78f82cad1584a123f655f0e9fe9a143d8aa5ed503522b04255b0624f
+  md5: 95d8e9165c22fce5e2069e76828c81cf
+  depends:
+  - libwinpthread 12.0.0.r4.gg4f2fc60ca h57928b3_10
+  license: MIT AND BSD-3-Clause-Clear
+  purls: []
+  size: 123860
+  timestamp: 1759768549765
 - conda: https://conda.anaconda.org/conda-forge/win-64/x264-1!164.3095-h8ffe710_2.tar.bz2
   sha256: 97166b318f8c68ffe4d50b2f4bd36e415219eeaef233e7d41c54244dc6108249
   md5: 19e39905184459760ccb8cf5c75f148b

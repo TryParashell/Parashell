@@ -154,6 +154,7 @@ sed = "*"
 
 [target.win-64.dependencies]
 libwinpthread = "*"
+winpthreads-devel = "*"
 
 [pypi-dependencies]
 freecad-stubs = "*"
