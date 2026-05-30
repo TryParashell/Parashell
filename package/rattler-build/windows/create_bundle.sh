@@ -4,6 +4,7 @@ set -e
 set -x
 
 conda_env="$(pwd)/../.pixi/envs/default/"
+conda_env="${conda_env//\\//}"
 
 copy_dir="Parashell_Windows"
 mkdir -p ${copy_dir}/bin
