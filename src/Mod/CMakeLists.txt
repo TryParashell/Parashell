@@ -135,3 +135,7 @@ endif(BUILD_TUX)
 if(BUILD_WEB)
     add_subdirectory(Web)
 endif(BUILD_WEB)
+
+if(BUILD_BRIDGE)
+    add_subdirectory(Bridge)
+endif(BUILD_BRIDGE)
