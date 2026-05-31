@@ -74,7 +74,6 @@ using Base::UnitsApi;
 DlgSettingsGeneral::DlgSettingsGeneral(QWidget* parent)
     : PreferencePage(parent)
     , localeIndex(0)
-    , themeChanged(false)
     , ui(new Ui_DlgSettingsGeneral)
 {
     ui->setupUi(this);
@@ -85,7 +84,6 @@ DlgSettingsGeneral::DlgSettingsGeneral(QWidget* parent)
         ui->UseLocaleFormatting->addItem(QCoreApplication::translate("Gui::Translator", option));
     }
 
-    ui->themesCombobox->setEnabled(true);
     Gui::Document* doc = Gui::Application::Instance->activeDocument();
     if (doc) {
         Gui::View3DInventor* view = qobject_cast<Gui::View3DInventor*>(doc->getActiveView());
@@ -95,12 +93,10 @@ DlgSettingsGeneral::DlgSettingsGeneral(QWidget* parent)
                 ui->ImportConfig->setEnabled(false);
                 ui->SaveNewPreferencePack->setEnabled(false);
                 ui->ManagePreferencePacks->setEnabled(false);
-                ui->themesCombobox->setEnabled(false);
-                ui->moreThemesLabel->setEnabled(false);
             }
         }
     }
-    if (ui->themesCombobox->isEnabled()) {
+    if (ui->ManagePreferencePacks->isEnabled()) {
         connect(ui->ImportConfig, &QPushButton::clicked, this, &DlgSettingsGeneral::onImportConfigClicked);
         connect(
             ui->SaveNewPreferencePack,
@@ -115,13 +111,6 @@ DlgSettingsGeneral::DlgSettingsGeneral(QWidget* parent)
             this,
             &DlgSettingsGeneral::onManagePreferencePacksClicked
         );
-        connect(
-            ui->themesCombobox,
-            qOverload<int>(&QComboBox::activated),
-            this,
-            &DlgSettingsGeneral::onThemeChanged
-        );
-        connect(ui->moreThemesLabel, &QLabel::linkActivated, this, &DlgSettingsGeneral::onLinkActivated);
     }
 
     // If there are any saved config file backs, show the revert button, otherwise hide it:
@@ -147,9 +136,6 @@ DlgSettingsGeneral::DlgSettingsGeneral(QWidget* parent)
     const auto visible = UnitsApi::isMultiUnitLength();
     ui->comboBox_FracInch->setVisible(visible);
     ui->fractionalInchLabel->setVisible(visible);
-    ui->moreThemesLabel->setEnabled(
-        Application::Instance->commandManager().getCommandByName("Std_AddonMgr") != nullptr
-    );
 }
 
 /**
@@ -273,10 +259,6 @@ void DlgSettingsGeneral::saveSettings()
         "User parameter:BaseApp/Preferences/MainWindow"
     );
     hGrp->SetBool("TiledBackground", ui->tiledBackground->isChecked());
-
-    if (themeChanged) {
-        saveThemes();
-    }
 }
 
 void DlgSettingsGeneral::loadSettings()
@@ -356,8 +338,6 @@ void DlgSettingsGeneral::loadSettings()
         "User parameter:BaseApp/Preferences/MainWindow"
     );
     ui->tiledBackground->setChecked(hGrp->GetBool("TiledBackground", false));
-
-    loadThemes();
 }
 
 void DlgSettingsGeneral::resetSettingsToDefaults()
@@ -376,8 +356,8 @@ void DlgSettingsGeneral::resetSettingsToDefaults()
     hGrp = App::GetApplication().GetParameterGroupByPath(
         "User parameter:BaseApp/Preferences/MainWindow"
     );
-    // reset "Theme" parameter
-    hGrp->RemoveASCII("Theme");
+    hGrp->SetASCII("Theme", "FreeCAD Dark");
+    hGrp->SetASCII("StyleSheet", "FreeCAD.qss");
     // reset "TiledBackground" parameter
     hGrp->RemoveBool("TiledBackground");
 
@@ -400,93 +380,6 @@ void DlgSettingsGeneral::resetSettingsToDefaults()
 
     // finally reset all the parameters associated to Gui::Pref* widgets
     PreferencePage::resetSettingsToDefaults();
-}
-
-void DlgSettingsGeneral::saveThemes()
-{
-    ParameterGrp::handle hGrp = App::GetApplication().GetParameterGroupByPath(
-        "User parameter:BaseApp/Preferences/MainWindow"
-    );
-
-    // First we check if the theme has actually changed.
-    std::string previousTheme = hGrp->GetASCII("Theme", "").c_str();
-    std::string newTheme = ui->themesCombobox->currentText().toStdString();
-
-    if (previousTheme == newTheme) {
-        themeChanged = false;
-        return;
-    }
-
-    // Save the name of the theme
-    hGrp->SetASCII("Theme", newTheme);
-
-    // Then we apply the themepack.
-    Application::Instance->prefPackManager()->rescan();
-    auto packs = Application::Instance->prefPackManager()->preferencePacks();
-
-    for (const auto& pack : packs) {
-        if (pack.first == newTheme) {
-
-            if (Application::Instance->prefPackManager()->apply(pack.first)) {
-                auto parentDialog = qobject_cast<DlgPreferencesImp*>(this->window());
-                if (parentDialog) {
-                    parentDialog->reload();
-                }
-            }
-            break;
-        }
-    }
-
-    themeChanged = false;
-}
-
-void DlgSettingsGeneral::loadThemes()
-{
-    ui->themesCombobox->clear();
-
-    ParameterGrp::handle hGrp = App::GetApplication().GetParameterGroupByPath(
-        "User parameter:BaseApp/Preferences/MainWindow"
-    );
-
-    QString currentTheme = QString::fromLatin1(hGrp->GetASCII("Theme", "").c_str());
-
-    Application::Instance->prefPackManager()->rescan();
-    auto packs = Application::Instance->prefPackManager()->preferencePacks();
-    QString currentStyleSheet = QString::fromLatin1(hGrp->GetASCII("StyleSheet", "").c_str());
-    QFileInfo fi(currentStyleSheet);
-    currentStyleSheet = fi.baseName();
-    QString themeClassic = QStringLiteral("classic");  // handle the upcoming name change
-    QString similarTheme;
-    QString packName;
-    for (const auto& pack : packs) {
-        if (pack.second.metadata().type() == "Theme") {
-            packName = QString::fromStdString(pack.first);
-            if (packName.contains(themeClassic, Qt::CaseInsensitive)) {
-                themeClassic = QString::fromStdString(pack.first);
-            }
-            if (packName.contains(currentStyleSheet, Qt::CaseInsensitive)) {
-                similarTheme = QString::fromStdString(pack.first);
-            }
-            ui->themesCombobox->addItem(QString::fromStdString(pack.first));
-        }
-    }
-
-    if (currentTheme.isEmpty()) {
-        if (!currentStyleSheet.isEmpty() && !similarTheme.isEmpty()) {  // a user upgrading from
-                                                                        // 0.21 or earlier
-            hGrp->SetASCII("Theme", similarTheme.toStdString());
-            currentTheme = QString::fromLatin1(hGrp->GetASCII("Theme", "").c_str());
-        }
-        else {  // a brand new user
-            hGrp->SetASCII("Theme", themeClassic.toStdString());
-            currentTheme = QString::fromLatin1(hGrp->GetASCII("Theme", "").c_str());
-        }
-    }
-
-    int index = ui->themesCombobox->findText(currentTheme);
-    if (index >= 0 && index < ui->themesCombobox->count()) {
-        ui->themesCombobox->setCurrentIndex(index);
-    }
 }
 
 int DlgSettingsGeneral::getCurrentIconSize() const
@@ -815,31 +708,6 @@ void DlgSettingsGeneral::onUnitSystemIndexChanged(const int index)
     const auto visible = schema->isMultiUnitLength();
     ui->comboBox_FracInch->setVisible(visible);
     ui->fractionalInchLabel->setVisible(visible);
-}
-
-void DlgSettingsGeneral::onThemeChanged(int index)
-{
-    Q_UNUSED(index);
-    themeChanged = true;
-}
-
-void DlgSettingsGeneral::onLinkActivated(const QString& link)
-{
-    auto const addonManagerLink = QStringLiteral("freecad:Std_AddonMgr");
-
-    if (link != addonManagerLink) {
-        return;
-    }
-
-    // Set the user preferences to include only preference packs.
-    // This is a quick and dirty way to open Addon Manager with only themes.
-    auto pref = App::GetApplication().GetParameterGroupByPath(
-        "User parameter:BaseApp/Preferences/Addons"
-    );
-    pref->SetInt("PackageTypeSelection", 3);  // 3 stands for Preference Packs
-    pref->SetInt("StatusSelection", 0);       // 0 stands for any installation status
-
-    Gui::Application::Instance->commandManager().runCommandByName("Std_AddonMgr");
 }
 
 ///////////////////////////////////////////////////////////

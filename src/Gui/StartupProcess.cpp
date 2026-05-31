@@ -332,16 +332,23 @@ void StartupPostProcess::setQtStyle()
     setStyleFromParameters();
 }
 
-void StartupPostProcess::migrateOldTheme(const std::string& style)
+void StartupPostProcess::enforceDarkTheme()
 {
     auto prefPackManager = Application::Instance->prefPackManager();
 
-    if (style == "FreeCAD Light.qss") {
-        prefPackManager->apply("FreeCAD Light");
-    }
-    else if (style == "FreeCAD Dark.qss") {
+    ParameterGrp::handle hGrp = App::GetApplication().GetParameterGroupByPath(
+        "User parameter:BaseApp/Preferences/MainWindow"
+    );
+
+    const std::string theme = hGrp->GetASCII("Theme");
+    const std::string style = hGrp->GetASCII("StyleSheet");
+
+    if (theme != "FreeCAD Dark" || style != "FreeCAD.qss") {
         prefPackManager->apply("FreeCAD Dark");
     }
+
+    hGrp->SetASCII("Theme", "FreeCAD Dark");
+    hGrp->SetASCII("StyleSheet", "FreeCAD.qss");
 }
 
 void StartupPostProcess::checkOpenGL()
@@ -532,21 +539,10 @@ void StartupPostProcess::setStyleSheet()
     ParameterGrp::handle hGrp = App::GetApplication().GetParameterGroupByPath(
         "User parameter:BaseApp/Preferences/MainWindow"
     );
-    std::string style = hGrp->GetASCII("StyleSheet");
-    if (style.empty()) {
-        // check the branding settings
-        const auto& config = App::Application::Config();
-        auto it = config.find("StyleSheet");
-        if (it != config.end()) {
-            style = it->second;
-        }
-    }
 
-    // In 1.1 we migrated to a common parametrized stylesheet.
-    // if we detect an old style, we need to reapply the theme pack.
-    migrateOldTheme(style);
+    enforceDarkTheme();
 
-    guiApp.setStyleSheet(QString::fromStdString(style), hGrp->GetBool("TiledBackground", false));
+    guiApp.setStyleSheet(QStringLiteral("FreeCAD.qss"), hGrp->GetBool("TiledBackground", false));
 }
 
 void StartupPostProcess::autoloadModules(const QStringList& wb)

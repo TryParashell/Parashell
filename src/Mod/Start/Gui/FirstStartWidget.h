@@ -32,7 +32,6 @@ class QPushButton;
 namespace StartGui
 {
 
-class ThemeSelectorWidget;
 class GeneralSettingsWidget;
 
 class FirstStartWidget: public QGroupBox
@@ -47,7 +46,6 @@ private:
     void retranslateUi();
     void setupUi();
 
-    ThemeSelectorWidget* _themeSelectorWidget;
     GeneralSettingsWidget* _generalSettingsWidget;
 
     QLabel* _welcomeLabel;

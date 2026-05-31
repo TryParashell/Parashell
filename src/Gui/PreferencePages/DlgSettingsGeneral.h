@@ -56,9 +56,6 @@ public:
     void loadSettings() override;
     void resetSettingsToDefaults() override;
 
-    void saveThemes();
-    void loadThemes();
-
     static void attachObserver();
 
 protected:
@@ -70,8 +67,6 @@ protected Q_SLOTS:
     void newPreferencePackDialogAccepted();
     void onManagePreferencePacksClicked();
     void onImportConfigClicked();
-    void onThemeChanged(int index);
-    void onLinkActivated(const QString& link);
 
 public Q_SLOTS:
     void onUnitSystemIndexChanged(int index);
@@ -93,7 +88,6 @@ private:
 
 private:
     int localeIndex;
-    bool themeChanged;
     std::unique_ptr<Ui_DlgSettingsGeneral> ui;
     std::unique_ptr<DlgCreateNewPreferencePackImp> newPreferencePackDialog;
     std::unique_ptr<DlgPreferencePackManagementImp> preferencePackManagementDialog;

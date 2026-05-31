@@ -3,9 +3,7 @@ SET(PreferencePacks_Files
 )
 
 SET(PreferencePacks_Directories
-        "FreeCAD Classic"
         "Dark behave"
-        "FreeCAD Light"
         "FreeCAD Dark"
 )
 

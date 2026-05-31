@@ -68,7 +68,7 @@ private:
     void setLocale();
     void setCursorFlashing();
     void setQtStyle();
-    void migrateOldTheme(const std::string& style);
+    void enforceDarkTheme();
     void checkOpenGL();
     void loadOpenInventor();
     void setBranding();

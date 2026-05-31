@@ -89,16 +89,6 @@
          </widget>
         </item>
         <item row="3" column="0">
-         <widget class="QLabel" name="styleSheetLabel">
-          <property name="text">
-           <string>Style sheet (advanced)</string>
-          </property>
-          <property name="buddy">
-           <cstring>StyleSheets</cstring>
-          </property>
-         </widget>
-        </item>
-        <item row="4" column="0">
          <widget class="QLabel" name="label_2">
           <property name="text">
            <string>Overlay style sheet</string>
@@ -161,22 +151,6 @@
          </widget>
         </item>
         <item row="3" column="1">
-         <widget class="Gui::PrefComboBox" name="StyleSheets">
-          <property name="toolTip">
-           <string>Style sheet how user interface will look like</string>
-          </property>
-          <property name="prefEntry" stdset="0">
-           <cstring>StyleSheet</cstring>
-          </property>
-          <property name="prefPath" stdset="0">
-           <cstring>MainWindow</cstring>
-          </property>
-          <property name="prefType" stdset="0">
-           <cstring></cstring>
-          </property>
-         </widget>
-        </item>
-        <item row="4" column="1">
          <widget class="Gui::PrefComboBox" name="OverlayStyleSheets">
           <property name="prefEntry" stdset="0">
            <cstring>OverlayActiveStyleSheet</cstring>
@@ -574,7 +548,6 @@
   <tabstop>ThemeAccentColor1</tabstop>
   <tabstop>ThemeAccentColor2</tabstop>
   <tabstop>ThemeAccentColor3</tabstop>
-  <tabstop>StyleSheets</tabstop>
   <tabstop>OverlayStyleSheets</tabstop>
   <tabstop>fontSizeSpinBox</tabstop>
   <tabstop>iconSizeSpinBox</tabstop>

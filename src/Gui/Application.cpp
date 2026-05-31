@@ -459,7 +459,7 @@ void Application::initStyleParameterManager()
             return path;
         }
 
-        return fmt::format("qss:parameters/{}.yaml", hMainWindowGrp->GetASCII("Theme", "Classic"));
+        return fmt::format("qss:parameters/{}.yaml", hMainWindowGrp->GetASCII("Theme", "FreeCAD Dark"));
     };
 
     auto themeParametersSource = new StyleParameters::YamlParameterSource(

@@ -32,7 +32,6 @@
 
 
 #include "FirstStartWidget.h"
-#include "ThemeSelectorWidget.h"
 #include "GeneralSettingsWidget.h"
 
 #include <App/Application.h>
@@ -42,7 +41,6 @@ using namespace StartGui;
 
 FirstStartWidget::FirstStartWidget(QWidget* parent)
     : QGroupBox(parent)
-    , _themeSelectorWidget {nullptr}
     , _generalSettingsWidget {nullptr}
     , _welcomeLabel {nullptr}
     , _descriptionLabel {nullptr}
@@ -62,11 +60,9 @@ void FirstStartWidget::setupUi()
     _descriptionLabel = gsl::owner<QLabel*>(new QLabel);
     outerLayout->addWidget(_descriptionLabel);
 
-    _themeSelectorWidget = gsl::owner<ThemeSelectorWidget*>(new ThemeSelectorWidget(this));
     _generalSettingsWidget = gsl::owner<GeneralSettingsWidget*>(new GeneralSettingsWidget(this));
 
     outerLayout->addWidget(_generalSettingsWidget);
-    outerLayout->addWidget(_themeSelectorWidget);
 
     _doneButton = gsl::owner<QPushButton*>(new QPushButton);
     connect(_doneButton, &QPushButton::clicked, this, &FirstStartWidget::dismissed);

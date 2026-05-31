@@ -60,8 +60,6 @@ SET(StartGui_SRCS
         PreCompiled.h
         StartView.cpp
         StartView.h
-        ThemeSelectorWidget.cpp
-        ThemeSelectorWidget.h
         )
 
 SET(StartGuiIcon_SVG
@@ -70,9 +68,6 @@ SET(StartGuiIcon_SVG
         )
 
 SET(StartGuiThumbnail_PNG
-        Resources/thumbnails/Theme_thumbnail_classic.png
-        Resources/thumbnails/Theme_thumbnail_dark.png
-        Resources/thumbnails/Theme_thumbnail_light.png
         )
 
 # Add CoreFoundation to StartGui_LIBS on macOS
