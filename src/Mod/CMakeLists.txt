@@ -139,3 +139,7 @@ endif(BUILD_WEB)
 if(BUILD_BRIDGE)
     add_subdirectory(Bridge)
 endif(BUILD_BRIDGE)
+
+if(BUILD_IDMSA)
+    add_subdirectory(IDMSA)
+endif(BUILD_IDMSA)
