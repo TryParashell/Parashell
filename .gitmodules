@@ -7,3 +7,6 @@
 [submodule "src/Mod/AddonManager"]
 	path = src/Mod/AddonManager
 	url = https://github.com/FreeCAD/AddonManager.git
+[submodule "tests/lib"]
+	path = tests/lib
+	url = https://github.com/google/googletest.git
