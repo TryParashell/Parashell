@@ -14,6 +14,7 @@ SET(Bridge_SRCS
     Init.py
     InitGui.py
     bridge_prompts.py
+    discovery.py
 )
 
 SET(Bridge_ALL ${Bridge_SRCS} ${Bridge_Binaries})
