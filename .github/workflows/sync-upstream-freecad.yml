@@ -23,7 +23,7 @@ jobs:
       SYNC_BRANCH: upstream-sync/freecad
     steps:
       - name: Checkout Parashell
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
           ref: ${{ env.TARGET_BRANCH }}
