@@ -13,6 +13,13 @@ import xmlrpc.client
 from pathlib import Path
 from typing import Any
 
+try:
+    import defusedxml.xmlrpc as _defused_xmlrpc
+
+    _defused_xmlrpc.monkey_patch()
+except ImportError:
+    pass
+
 SCHEMA_VERSION = 1
 APP_NAME = "Parashell"
 DESCRIPTOR_FILENAME = "bridge.json"
