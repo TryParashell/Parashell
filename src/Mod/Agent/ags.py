@@ -36,7 +36,6 @@ from PySide6 import QtCore
 
 
 _SENSITIVE_AUTH_KEYS = {
-    "accessToken",
     "access_token",
     "refreshToken",
     "refresh_token",
