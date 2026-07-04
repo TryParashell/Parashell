@@ -39,6 +39,7 @@ class GuiExport StartupProcess
 {
 public:
     StartupProcess();
+    static void setupRenderingBackend();
     static void setupApplication();
     void execute();
 

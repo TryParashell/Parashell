@@ -55,6 +55,7 @@
 #include <Base/Tools.h>
 #include <Gui/Application.h>
 #include <Gui/ProgramInformation.h>
+#include <Gui/StartupProcess.h>
 
 
 void PrintInitHelp();
@@ -151,6 +152,8 @@ static void displayCritical(const QString& msg, bool preformatted = true)
 
 int main(int argc, char** argv)
 {
+    Gui::StartupProcess::setupRenderingBackend();
+
 #if defined(FC_OS_LINUX) || defined(FC_OS_BSD)
     setlocale(LC_ALL, "");  // use native environment settings
     // Preserve the resolved numeric locale before forcing LC_NUMERIC=C for XML parsing.

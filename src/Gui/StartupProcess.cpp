@@ -29,16 +29,25 @@
 #endif
 
 #include <QApplication>
+#include <QByteArrayList>
 #include <QImageReader>
 #include <QLabel>
 #include <QOpenGLContext>
 #include <QOpenGLFunctions>
 #include <QProcess>
+#include <QSurfaceFormat>
 #include <QStatusBar>
 #include <QWindow>
 
+#ifdef FREECAD_HAVE_QTWEBENGINE
+# include <QQuickWindow>
+# include <QSGRendererInterface>
+# include <QtWebEngineQuick/QtWebEngineQuick>
+#endif
+
 #include <Inventor/SoDB.h>
 
+#include <cstdlib>
 #include <set>
 #include <string>
 #include <ranges>
@@ -62,17 +71,102 @@
 
 using namespace Gui;
 
+namespace
+{
+
+bool isSlowChromiumRenderingFlag(const QByteArray& flag)
+{
+    return flag == "--disable-gpu" || flag == "--disable-gpu-compositing";
+}
+
+void appendChromiumFlag(QByteArrayList& flags, const char* value)
+{
+    const QByteArray flag(value);
+    if (!flags.contains(flag)) {
+        flags.append(flag);
+    }
+}
+
+void setupDefaultOpenGLSurfaceFormat()
+{
+    QSurfaceFormat defaultFormat;
+    defaultFormat.setRenderableType(QSurfaceFormat::OpenGL);
+    defaultFormat.setProfile(QSurfaceFormat::CompatibilityProfile);
+    defaultFormat.setOption(QSurfaceFormat::DeprecatedFunctions, true);
+#if defined(FC_OS_LINUX) || defined(FC_OS_BSD)
+    // QGuiApplication::platformName() doesn't yet work at this point, so we use the env var.
+    if (std::getenv("WAYLAND_DISPLAY")) {
+        // In some settings (at least EGL on Wayland) we get RGB565 by default.
+        // Request something better.
+        defaultFormat.setRedBufferSize(8);
+        defaultFormat.setGreenBufferSize(8);
+        defaultFormat.setBlueBufferSize(8);
+        // Qt's behavior with format requests seems opaque, underdocumented and,
+        // unfortunately, inconsistent between platforms. Requesting an alpha
+        // channel tends to steer it away from weird legacy choices like RGB565.
+        defaultFormat.setAlphaBufferSize(8);
+        // And a depth/stencil buffer is generally useful if we can have it.
+        defaultFormat.setDepthBufferSize(24);
+        defaultFormat.setStencilBufferSize(8);
+    }
+#endif
+    QSurfaceFormat::setDefaultFormat(defaultFormat);
+}
+
+#ifdef FREECAD_HAVE_QTWEBENGINE
+void setupQtWebEngineChromiumFlags()
+{
+    QByteArrayList flags;
+    const auto existingFlags = qgetenv("QTWEBENGINE_CHROMIUM_FLAGS").split(' ');
+    for (const auto& rawFlag : existingFlags) {
+        const QByteArray flag = rawFlag.trimmed();
+        if (flag.isEmpty() || isSlowChromiumRenderingFlag(flag) || flags.contains(flag)) {
+            continue;
+        }
+        flags.append(flag);
+    }
+
+    appendChromiumFlag(flags, "--disable-background-timer-throttling");
+    appendChromiumFlag(flags, "--disable-renderer-backgrounding");
+    appendChromiumFlag(flags, "--disable-backgrounding-occluded-windows");
+    appendChromiumFlag(flags, "--disable-gpu-process-crash-limit");
+    appendChromiumFlag(flags, "--log-level=3");
+
+    qputenv("QTWEBENGINE_CHROMIUM_FLAGS", flags.join(' '));
+}
+#endif
+
+}  // namespace
+
 
 StartupProcess::StartupProcess() = default;
 
-void StartupProcess::setupApplication()
+void StartupProcess::setupRenderingBackend()
 {
+    static bool initialized = false;
+    if (initialized) {
+        return;
+    }
+    initialized = true;
+
     if (!qEnvironmentVariableIsSet("QSG_RHI_BACKEND")) {
         qputenv("QSG_RHI_BACKEND", "opengl");
     }
 
     QCoreApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
     QCoreApplication::setAttribute(Qt::AA_UseDesktopOpenGL);
+    setupDefaultOpenGLSurfaceFormat();
+
+#ifdef FREECAD_HAVE_QTWEBENGINE
+    setupQtWebEngineChromiumFlags();
+    QQuickWindow::setGraphicsApi(QSGRendererInterface::OpenGL);
+    QtWebEngineQuick::initialize();
+#endif
+}
+
+void StartupProcess::setupApplication()
+{
+    setupRenderingBackend();
 
     // Automatic scaling for legacy apps (disable once all parts of GUI are aware of HiDpi)
     ParameterGrp::handle hDPI = App::GetApplication().GetParameterGroupByPath(
