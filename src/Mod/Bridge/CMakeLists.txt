@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: LGPL-2.1-or-later
 
-file(GLOB Bridge_Binaries CONFIGURE_DEPENDS RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}"
+file(GLOB_RECURSE Bridge_Binaries CONFIGURE_DEPENDS RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}"
     "${CMAKE_CURRENT_SOURCE_DIR}/*.pyd"
     "${CMAKE_CURRENT_SOURCE_DIR}/*.so"
 )
@@ -25,9 +25,11 @@ ADD_CUSTOM_TARGET(Bridge ALL
 
 fc_copy_sources(Bridge "${CMAKE_BINARY_DIR}/Mod/Bridge" ${Bridge_ALL})
 
-INSTALL(
-    FILES
-        ${Bridge_ALL}
-    DESTINATION
-        Mod/Bridge
-)
+foreach(_bridge_file IN LISTS Bridge_ALL)
+    get_filename_component(_bridge_dir "${_bridge_file}" DIRECTORY)
+    if(_bridge_dir)
+        install(FILES "${_bridge_file}" DESTINATION "Mod/Bridge/${_bridge_dir}")
+    else()
+        install(FILES "${_bridge_file}" DESTINATION Mod/Bridge)
+    endif()
+endforeach()
