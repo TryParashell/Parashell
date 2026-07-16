@@ -64,7 +64,7 @@ jobs:
       CCACHE_COMPRESSLEVEL: 5
       CCACHE_CONFIGPATH: ${{ github.workspace }}/ccache/config
       CCACHE_DIR: ${{ github.workspace }}/ccache
-      CCACHE_MAXSIZE: 1G
+      CCACHE_MAXSIZE: 8G
       CCACHE_NODIRECT: true
       CCACHE_NOHASHDIR: true
       CCACHE_NOINODECACHE: true
@@ -132,7 +132,7 @@ jobs:
         echo "reportFile=${{ env.reportfilename }}" >> $GITHUB_OUTPUT
 
     - if: "!inputs.skipBuild"
-      uses: prefix-dev/setup-pixi@5185adfbffb4bd703da3010310260805d89ebb11 # v0.9.6
+      uses: prefix-dev/setup-pixi@a09b6247153796b190642a2b53fac4241043cf6f # v0.10.0
       with:
         pixi-version: v0.68.1
         cache: false
@@ -260,6 +260,26 @@ jobs:
         testDescription: "GUI tests on install"
         testCommand: pixi run xvfb-run FreeCAD -t 0
         logFile: ${{ env.logdir }}TestGUIInstall.log
+        reportFile: ${{env.reportdir}}${{ env.reportfilename }}
+
+    - name: Parashell module load (subprocess side)
+      if: "!inputs.skipBuild"
+      timeout-minutes: 10
+      uses: ./.github/workflows/actions/runPythonTests
+      with:
+        testDescription: "Parashell module load (subprocess side)"
+        testCommand: pixi run python .github/scripts/test_parashell_module_load.py
+        logFile: ${{ env.logdir }}ParashellModuleLoadSubprocess.log
+        reportFile: ${{env.reportdir}}${{ env.reportfilename }}
+
+    - name: Parashell module load inside FreeCAD
+      if: runner.os == 'Linux' && !inputs.skipBuild
+      timeout-minutes: 15
+      uses: ./.github/workflows/actions/runPythonTests
+      with:
+        testDescription: "Parashell module load inside FreeCAD"
+        testCommand: pixi run ${{ env.builddir }}/bin/FreeCADCmd ${{ github.workspace }}/.github/scripts/test_parashell_module_load.py
+        logFile: ${{ env.logdir }}ParashellModuleLoadFreeCAD.log
         reportFile: ${{env.reportdir}}${{ env.reportfilename }}
 
     - name: Save Compiler Cache

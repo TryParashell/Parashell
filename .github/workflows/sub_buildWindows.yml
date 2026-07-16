@@ -71,7 +71,7 @@ jobs:
       CCACHE_COMPRESSLEVEL: 5
       CCACHE_DIR: C:/FC/cache/
       CCACHE_LOGFILE: C:/logs/ccache.log
-      CCACHE_MAXSIZE: 1G
+      CCACHE_MAXSIZE: 8G
       CCACHE_NODIRECT: true
       CCACHE_NOHASHDIR: true
       CCACHE_NOINODECACHE: true
