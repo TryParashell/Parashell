@@ -144,7 +144,7 @@ if ! "$SIGN_DIR/bin/ParashellCmd.exe" --safe-mode --version; then
 fi
 
 echo "Running FreeCAD bundled Pivy smoke test..."
-if ! "$SIGN_DIR/bin/freecadcmd.exe" --safe-mode --console "import pivy; from pivy import coin; print(pivy.__file__); print(coin.SoDB.getVersion())"; then
+if ! "$SIGN_DIR/bin/ParashellCmd.exe" --safe-mode --console "import pivy; from pivy import coin; print(pivy.__file__); print(coin.SoDB.getVersion())"; then
   echo "FreeCAD bundled Pivy smoke test failed; the Windows bundle cannot import the bundled Coin/Pivy runtime."
   exit 1
 fi
