@@ -240,13 +240,23 @@ jobs:
           logFile: ${{ env.logdir }}TestGUIInstall.log
           reportFile: ${{env.reportdir}}${{ env.reportfilename }}
 
-      - name: Parashell module load inside FreeCAD
-        timeout-minutes: 15
+      - name: Set up Python 3.11 for Parashell module load
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.11"
+
+      - name: Install Parashell module runtime dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install mcp validators numpy scipy sympy certifi
+
+      - name: Parashell module load (Python 3.11)
+        timeout-minutes: 10
         uses: ./.github/workflows/actions/runPythonTests
         with:
-          testDescription: "Parashell module load inside FreeCAD"
-          testCommand: xvfb-run ${{ env.builddir }}/bin/FreeCAD ${{ github.workspace }}/.github/scripts/test_parashell_module_load.py
-          logFile: ${{ env.logdir }}ParashellModuleLoadFreeCAD.log
+          testDescription: "Parashell module load (Python 3.11)"
+          testCommand: PARASHELL_MOD_ROOT="${{ github.workspace }}/src/Mod" python .github/scripts/test_parashell_module_load.py
+          logFile: ${{ env.logdir }}ParashellModuleLoad.log
           reportFile: ${{env.reportdir}}${{ env.reportfilename }}
 
       - name: Save Compiler Cache

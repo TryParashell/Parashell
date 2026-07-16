@@ -11,7 +11,7 @@ from pathlib import Path
 
 
 ENTRYPOINT_WRAPPERS = {"Init", "InitGui", "__init__"}
-ENVIRONMENT_DEPENDENCIES = ("FreeCAD", "FreeCADGui")
+ENVIRONMENT_DEPENDENCIES = ("FreeCAD", "FreeCADGui", "PySide6", "PySide2", "PySide")
 SUBDIRECTORIES = ("tools", "rpc_methods")
 
 
@@ -70,6 +70,8 @@ def can_import(name: str) -> bool:
 def is_environment_skip(exc: BaseException) -> bool:
     name = getattr(exc, "name", None)
     if name in ENVIRONMENT_DEPENDENCIES and not can_import(name):
+        return True
+    if isinstance(exc, ImportError) and "cannot open shared object file" in str(exc):
         return True
     return False
 
@@ -130,8 +132,13 @@ def run() -> int:
     print(f"Modules under test: {', '.join(path.name for path in modules)}")
 
     failures: list[tuple[str, str]] = []
+    total_loaded = 0
+    empty_modules: list[str] = []
     for module_dir in modules:
         loaded, skipped, failed = load_module(module_dir)
+        total_loaded += len(loaded)
+        if not loaded and not failed:
+            empty_modules.append(module_dir.name)
         print(
             f"[{module_dir.name}] loaded={len(loaded)} "
             f"skipped={len(skipped)} failed={len(failed)}"
@@ -143,12 +150,33 @@ def run() -> int:
             print(tb)
         failures.extend((module_dir.name, name) for name, _ in failed)
 
+    if total_loaded == 0:
+        print(
+            "\nModule load test FAILED: no Parashell modules loaded under this "
+            f"interpreter (Python {sys.version_info.major}.{sys.version_info.minor}). "
+            "This means the compiled binaries do not match the running interpreter "
+            "(ABI/version mismatch) or are missing.",
+            file=sys.stderr,
+        )
+        return 1
+
+    if empty_modules:
+        print(
+            "\nModule load test FAILED: these modules loaded zero binaries "
+            f"(ABI/version mismatch): {', '.join(empty_modules)}",
+            file=sys.stderr,
+        )
+        return 1
+
     if failures:
         listing = ", ".join(f"{module}/{name}" for module, name in failures)
         print(f"\nModule load test FAILED for: {listing}", file=sys.stderr)
         return 1
 
-    print("\nModule load test PASSED: every module imported without errors.")
+    print(
+        f"\nModule load test PASSED: {total_loaded} modules imported without errors "
+        f"under Python {sys.version_info.major}.{sys.version_info.minor}."
+    )
     return 0
 
 
