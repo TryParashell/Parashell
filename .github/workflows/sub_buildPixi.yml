@@ -143,11 +143,26 @@ jobs:
       shell: bash
       run: |
         set -euo pipefail
-        if pixi install --locked; then
+        retry() {
+          local attempt=1
+          local max=3
+          while true; do
+            if "$@"; then
+              return 0
+            fi
+            if [ "$attempt" -ge "$max" ]; then
+              return 1
+            fi
+            echo "::warning::'$*' failed (attempt $attempt/$max); retrying in $((attempt * 15))s"
+            sleep $((attempt * 15))
+            attempt=$((attempt + 1))
+          done
+        }
+        if retry pixi install --locked; then
           exit 0
         fi
         echo "::warning::Workspace pixi.lock is out of sync with manifest; regenerating without --locked. The Build Release workflow will commit the regenerated lock back to main."
-        pixi install
+        retry pixi install
 
     - name: Restore Compiler Cache
       id: cache-restore
