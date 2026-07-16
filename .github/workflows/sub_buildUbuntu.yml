@@ -240,6 +240,15 @@ jobs:
           logFile: ${{ env.logdir }}TestGUIInstall.log
           reportFile: ${{env.reportdir}}${{ env.reportfilename }}
 
+      - name: Parashell module load inside FreeCAD
+        timeout-minutes: 15
+        uses: ./.github/workflows/actions/runPythonTests
+        with:
+          testDescription: "Parashell module load inside FreeCAD"
+          testCommand: xvfb-run ${{ env.builddir }}/bin/FreeCAD ${{ github.workspace }}/.github/scripts/test_parashell_module_load.py
+          logFile: ${{ env.logdir }}ParashellModuleLoadFreeCAD.log
+          reportFile: ${{env.reportdir}}${{ env.reportfilename }}
+
       - name: Save Compiler Cache
         id: cache-save
         if: always()
