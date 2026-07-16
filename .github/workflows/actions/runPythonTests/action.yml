@@ -44,44 +44,55 @@ runs:
     - name: Run tests
       id: runTests
       shell: bash -l {0}
+      env:
+        LOG_FILE: ${{ inputs.logFile }}
       run: |
         set -o pipefail
-        mkdir -p "$(dirname "${{ inputs.logFile }}")"
+        LOG_FILE="${LOG_FILE//\\//}"
+        mkdir -p "$(dirname "$LOG_FILE")"
         {
           ${{ inputs.testCommand }}
-        } 2>&1 | sed -Ee "/[[:blank:]]*\\([[:digit:]]{1,3} %\\)[[:blank:]]*/d" | tee -a "${{ inputs.logFile }}"
+        } 2>&1 | sed -Ee "/[[:blank:]]*\\([[:digit:]]{1,3} %\\)[[:blank:]]*/d" | tee -a "$LOG_FILE"
     - name: Write report
       shell: bash -l {0}
       if: always()
+      env:
+        LOG_FILE: ${{ inputs.logFile }}
+        REPORT_FILE: ${{ inputs.reportFile }}
+        TEST_DESCRIPTION: ${{ inputs.testDescription }}
+        RUN_TESTS_OUTCOME: ${{ steps.runTests.outcome }}
       run: |
-        mkdir -p "$(dirname "${{ inputs.logFile }}")"
-        touch "${{ inputs.logFile }}"
-        sed -ne "/^\(FAILED\|ERROR\):/,/^[[:blank:]]*$/bF; /^Traceback/,/^[^[:blank:]]/{/^Traceback/bT; /^[^[:blank:]]/G; bT}; b; :T w ${{ inputs.logFile }}_tracebacks" -e "b; :F w ${{ inputs.logFile }}_failedtests" ${{ inputs.logFile }}
+        LOG_FILE="${LOG_FILE//\\//}"
+        REPORT_FILE="${REPORT_FILE//\\//}"
+        mkdir -p "$(dirname "$LOG_FILE")"
+        mkdir -p "$(dirname "$REPORT_FILE")"
+        touch "$LOG_FILE"
+        sed -ne "/^\(FAILED\|ERROR\):/,/^[[:blank:]]*$/bF; /^Traceback/,/^[^[:blank:]]/{/^Traceback/bT; /^[^[:blank:]]/G; bT}; b; :T w ${LOG_FILE}_tracebacks" -e "b; :F w ${LOG_FILE}_failedtests" "$LOG_FILE"
         icon=""
-        if [ $( cat ${{ inputs.logFile }}_tracebacks | wc -l ) -gt 0 ]
+        if [ $( cat "${LOG_FILE}_tracebacks" | wc -l ) -gt 0 ]
         then
           icon=" :fire:"
         fi
-        if [ ${{ steps.runTests.outcome }} == 'success' ]
+        if [ "$RUN_TESTS_OUTCOME" == 'success' ]
         then
-          echo "<details><summary>:heavy_check_mark: ${{ inputs.testDescription }} succeeded$icon</summary>" >> ${{ inputs.reportFile }}
+          echo "<details><summary>:heavy_check_mark: $TEST_DESCRIPTION succeeded$icon</summary>" >> "$REPORT_FILE"
         else
-          echo "<details><summary>:fire: ${{ inputs.testDescription }} failed$icon</summary>" >> ${{ inputs.reportFile }}
-          echo "" >> ${{ inputs.reportFile }}
-          echo "Failed tests" >> ${{ inputs.reportFile }}
-          echo "" >> ${{ inputs.reportFile }}
-          echo '```' >> ${{ inputs.reportFile }}
-          cat ${{ inputs.logFile }}_failedtests >> ${{ inputs.reportFile }}
-          echo '```' >> ${{ inputs.reportFile }}
+          echo "<details><summary>:fire: $TEST_DESCRIPTION failed$icon</summary>" >> "$REPORT_FILE"
+          echo "" >> "$REPORT_FILE"
+          echo "Failed tests" >> "$REPORT_FILE"
+          echo "" >> "$REPORT_FILE"
+          echo '```' >> "$REPORT_FILE"
+          cat "${LOG_FILE}_failedtests" >> "$REPORT_FILE"
+          echo '```' >> "$REPORT_FILE"
         fi
-        echo "" >> ${{ inputs.reportFile }}
-        if [ $( cat ${{ inputs.logFile }}_tracebacks | wc -l ) -gt 0 ]
+        echo "" >> "$REPORT_FILE"
+        if [ $( cat "${LOG_FILE}_tracebacks" | wc -l ) -gt 0 ]
         then
-          echo "Uncaught tracebacks -- these tracebacks appeared during test but didn't fail a test --" >> ${{ inputs.reportFile }}
-          echo "" >> ${{ inputs.reportFile }}
-          echo '```' >> ${{ inputs.reportFile }}
-          cat ${{ inputs.logFile }}_tracebacks >> ${{ inputs.reportFile }}
-          echo '```' >> ${{ inputs.reportFile }}
+          echo "Uncaught tracebacks -- these tracebacks appeared during test but didn't fail a test --" >> "$REPORT_FILE"
+          echo "" >> "$REPORT_FILE"
+          echo '```' >> "$REPORT_FILE"
+          cat "${LOG_FILE}_tracebacks" >> "$REPORT_FILE"
+          echo '```' >> "$REPORT_FILE"
         fi
-        echo "</details>">> ${{ inputs.reportFile }}
-        echo "" >> ${{ inputs.reportFile }}
+        echo "</details>">> "$REPORT_FILE"
+        echo "" >> "$REPORT_FILE"
