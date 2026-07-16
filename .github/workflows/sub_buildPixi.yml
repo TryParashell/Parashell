@@ -188,7 +188,7 @@ jobs:
       uses: ./.github/workflows/actions/runPythonTests
       with:
         testDescription: "CLI tests on build dir"
-        testCommand: pixi run ${{ env.builddir }}/bin/FreeCADCmd -t 0
+        testCommand: QT_QPA_PLATFORM=offscreen pixi run ${{ env.builddir }}/bin/FreeCADCmd -t 0
         logFile: ${{ env.logdir }}TestCLIBuild.log
         reportFile: ${{env.reportdir}}${{ env.reportfilename }}
 
@@ -246,7 +246,7 @@ jobs:
       uses: ./.github/workflows/actions/runPythonTests
       with:
         testDescription: "CLI tests on install"
-        testCommand: pixi run FreeCADCmd -t 0
+        testCommand: QT_QPA_PLATFORM=offscreen pixi run FreeCADCmd -t 0
         logFile: ${{ env.logdir }}TestCLIInstall.log
         reportFile: ${{env.reportdir}}${{ env.reportfilename }}
 
