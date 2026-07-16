@@ -62,7 +62,7 @@ jobs:
       CCACHE_COMPRESSLEVEL: 5
       CCACHE_CONFIGPATH: ${{ github.workspace }}/ccache/config
       CCACHE_DIR: ${{ github.workspace }}/ccache
-      CCACHE_MAXSIZE: 1G
+      CCACHE_MAXSIZE: 8G
       CCACHE_NODIRECT: true
       CCACHE_NOHASHDIR: true
       CCACHE_NOINODECACHE: true
