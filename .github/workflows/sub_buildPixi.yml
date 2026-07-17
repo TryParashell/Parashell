@@ -107,6 +107,17 @@ jobs:
       if: "!inputs.skipBuild"
       uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
 
+    - name: Install runtime OpenGL/EGL libraries
+      if: runner.os == 'Linux' && !inputs.skipBuild
+      run: |
+        sudo apt-get update -y -qq
+        sudo apt-get install -y -qq \
+          libegl1 \
+          libgl1 \
+          libglx-mesa0 \
+          libopengl0 \
+          libglu1-mesa
+
     - name: Add GCC Problem Matcher
       if: runner.os == 'Linux' && !inputs.skipBuild
       run: |
