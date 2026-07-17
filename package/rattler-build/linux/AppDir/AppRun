@@ -12,6 +12,8 @@ export FONTCONFIG_PATH=/etc/fonts
 # Fix: Use X to run on Wayland
 export QT_QPA_PLATFORM=xcb
 
+export QTWEBENGINE_DISABLE_SANDBOX=1
+
 # Show packages info if DEBUG env variable is set
 if [ "$DEBUG" = 1 ]; then
     cat ${HERE}/packages.txt
