@@ -28,6 +28,32 @@ if [[ ${HOST} =~ .*darwin.* ]]; then
 
     CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"
 
+    for mesa_gl_header in \
+        "${PREFIX}/include/GL/gl.h" \
+        "${PREFIX}/include/GL/glext.h" \
+        "${PREFIX}/include/GL/glcorearb.h" \
+        "${PREFIX}/include/GL/gl_mangle.h" \
+        "${PREFIX}/include/GL/glx.h" \
+        "${PREFIX}/include/GL/glxext.h" \
+        "${PREFIX}/include/GL/glx_mangle.h" \
+        "${PREFIX}/include/GL/osmesa.h"; do
+        if [[ -f "${mesa_gl_header}" ]]; then
+            echo "Removing conflicting mesa GL header: ${mesa_gl_header}"
+            rm -f "${mesa_gl_header}"
+        fi
+    done
+    for mesa_gl_dir in \
+        "${PREFIX}/include/GLES" \
+        "${PREFIX}/include/GLES2" \
+        "${PREFIX}/include/GLES3" \
+        "${PREFIX}/include/EGL" \
+        "${PREFIX}/include/KHR"; do
+        if [[ -d "${mesa_gl_dir}" ]]; then
+            echo "Removing conflicting mesa GL header dir: ${mesa_gl_dir}"
+            rm -rf "${mesa_gl_dir}"
+        fi
+    done
+
     # Use MACOS_DEPLOYMENT_TARGET from environment, default to 11.0 for backwards compat.
     # Note that CI sets this per target: 10.13 (Intel), 11.0 (ARM legacy), 15.0 (ARM modern)
     # - macOS 10.13+ Intel: legacy QuickLook generator (.qlgenerator)
