@@ -82,7 +82,7 @@ runs:
       run: |
         set -euo pipefail
         python -m pip install --upgrade pip
-        python -m pip install aqtinstall
+        python -m pip install "aqtinstall==3.1.*"
         python -m aqt install-qt windows desktop ${{ inputs.qtversion }} ${{ inputs.qtarch }} \
           --modules qtwebengine qtpositioning \
           --outputdir qtwebengine_tmp
