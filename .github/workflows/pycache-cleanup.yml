@@ -1,0 +1,75 @@
+name: Parashell pycache cleanup
+
+on:
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: Branch to clean and recommit
+        required: true
+        default: main
+        type: string
+      paths_base64:
+        description: Base64-encoded newline-separated list of tracked __pycache__ files
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pycache-cleanup-${{ inputs.ref }}
+  cancel-in-progress: false
+
+jobs:
+  cleanup:
+    name: Remove __pycache__ and recommit
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Harden the runner (Audit all outbound calls)
+        uses: step-security/harden-runner@bf7454d06d71f1098171f2acdf0cd4708d7b5920 # v2.20.0
+        with:
+          egress-policy: audit
+
+      - name: Check out target branch
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          ref: ${{ inputs.ref }}
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Remove tracked __pycache__ files
+        shell: bash
+        env:
+          PATHS_B64: ${{ inputs.paths_base64 }}
+        run: |
+          set -euo pipefail
+          printf '%s' "$PATHS_B64" | base64 -d > /tmp/pycache-paths.txt
+          while IFS= read -r path; do
+            [ -n "$path" ] || continue
+            git rm -r --quiet --ignore-unmatch -- "$path"
+          done < /tmp/pycache-paths.txt
+          remaining="$(git ls-files | grep -E '(^|/)__pycache__/' || true)"
+          if [ -n "$remaining" ]; then
+            while IFS= read -r path; do
+              [ -n "$path" ] || continue
+              git rm -r --quiet --ignore-unmatch -- "$path"
+            done <<< "$remaining"
+          fi
+
+      - name: Commit and push cleanup
+        shell: bash
+        env:
+          TARGET_REF: ${{ inputs.ref }}
+        run: |
+          set -euo pipefail
+          if git diff --cached --quiet; then
+            echo "No tracked __pycache__ files remained to remove."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "chore: remove tracked __pycache__ directories [skip ci]"
+          git push origin "HEAD:$TARGET_REF"
+          echo "Removed tracked __pycache__ files and pushed to $TARGET_REF."

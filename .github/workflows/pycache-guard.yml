@@ -1,0 +1,76 @@
+name: Parashell pycache guard
+
+on:
+  workflow_dispatch: ~
+  pull_request:
+    types: [opened, synchronize, reopened]
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pycache-guard-${{ github.head_ref || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  scan:
+    name: Reject __pycache__ directories
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: write
+    steps:
+      - name: Harden the runner (Audit all outbound calls)
+        uses: step-security/harden-runner@bf7454d06d71f1098171f2acdf0cd4708d7b5920 # v2.20.0
+        with:
+          egress-policy: audit
+
+      - name: Check out repository
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Detect tracked __pycache__ files
+        id: detect
+        shell: bash
+        run: |
+          set -euo pipefail
+          offenders="$(git ls-files | grep -E '(^|/)__pycache__/' || true)"
+          if [ -z "$offenders" ]; then
+            echo "found=false" >> "$GITHUB_OUTPUT"
+            echo "No tracked __pycache__ files were found in the repository."
+            exit 0
+          fi
+          count="$(printf '%s\n' "$offenders" | grep -c . || true)"
+          payload="$(printf '%s\n' "$offenders" | base64 -w0)"
+          echo "found=true" >> "$GITHUB_OUTPUT"
+          echo "count=$count" >> "$GITHUB_OUTPUT"
+          echo "payload=$payload" >> "$GITHUB_OUTPUT"
+          echo "Detected $count tracked __pycache__ file(s):"
+          printf '%s\n' "$offenders"
+
+      - name: Spin up cleanup on main
+        if: steps.detect.outputs.found == 'true' && github.event_name == 'push' && github.ref == 'refs/heads/main'
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TARGET_REF: ${{ github.ref_name }}
+          PATHS_B64: ${{ steps.detect.outputs.payload }}
+        run: |
+          set -euo pipefail
+          gh workflow run pycache-cleanup.yml \
+            --ref "$TARGET_REF" \
+            -f ref="$TARGET_REF" \
+            -f paths_base64="$PATHS_B64"
+          echo "Dispatched pycache-cleanup.yml for $TARGET_REF."
+
+      - name: Fail when __pycache__ is present
+        if: steps.detect.outputs.found == 'true'
+        shell: bash
+        run: |
+          echo "::error::Found ${{ steps.detect.outputs.count }} tracked __pycache__ file(s). Remove them before merging."
+          exit 1
