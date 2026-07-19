@@ -1,27 +1,46 @@
 name: Build Release
 on:
-  release:
-    types: [created]
-  schedule:
-   - cron: "0 0 * * 3"
   workflow_dispatch:
+    inputs:
+      release_type:
+        description: "Release type"
+        type: choice
+        options:
+          - dev
+          - production
+        default: dev
+      version_major:
+        description: "Major version (production only)"
+        type: string
+        default: "1"
+      version_minor:
+        description: "Minor version (production only)"
+        type: string
+        default: "0"
+      version_patch:
+        description: "Patch version (production only)"
+        type: string
+        default: "0"
 
 permissions:
   contents: read
 
 concurrency:
-  group: build-release-${{ github.event_name }}
+  group: build-release-${{ github.event.inputs.release_type }}
   cancel-in-progress: true
 
 jobs:
   upload_src:
     runs-on: ubuntu-latest
-    if: github.repository_owner == 'TryParashell' || github.event_name == 'workflow_dispatch'
     permissions:
       contents: write
       actions: write
     outputs:
       build_tag: ${{ steps.get_tag.outputs.build_tag }}
+      v_major: ${{ steps.get_tag.outputs.v_major }}
+      v_minor: ${{ steps.get_tag.outputs.v_minor }}
+      v_patch: ${{ steps.get_tag.outputs.v_patch }}
+      v_suffix: ${{ steps.get_tag.outputs.v_suffix }}
     steps:
       - name: Harden the runner (Audit all outbound calls)
         uses: step-security/harden-runner@bf7454d06d71f1098171f2acdf0cd4708d7b5920 # v2.20.0
@@ -36,31 +55,53 @@ jobs:
           fetch-tags: true
           submodules: 'recursive'
 
-      - name: Get tag and create release if weekly
+      - name: Resolve version and create release
         id: get_tag
         shell: bash -l {0}
         env:
           GH_TOKEN: ${{ github.token }}
+          RELEASE_TYPE: ${{ github.event.inputs.release_type }}
+          INPUT_MAJOR: ${{ github.event.inputs.version_major }}
+          INPUT_MINOR: ${{ github.event.inputs.version_minor }}
+          INPUT_PATCH: ${{ github.event.inputs.version_patch }}
         run: |
-          if [ "${{ github.event_name }}" = "release" ]; then
-            export BUILD_TAG="${{ github.event.release.tag_name }}"
+          set -euo pipefail
+          if [ "$RELEASE_TYPE" = "production" ]; then
+            V_MAJOR="$INPUT_MAJOR"
+            V_MINOR="$INPUT_MINOR"
+            V_PATCH="$INPUT_PATCH"
+            V_SUFFIX=""
+            BUILD_TAG="${V_MAJOR}.${V_MINOR}.${V_PATCH}"
+            gh release create "$BUILD_TAG" --target "$GITHUB_SHA" --title "Parashell ${BUILD_TAG}" --latest || \
+            gh release view "$BUILD_TAG" > /dev/null
           else
-            BRANCH="${{ github.ref_name }}"
-            DEFAULT_BRANCH="${{ github.event.repository.default_branch }}"
-            if [ "$BRANCH" = "$DEFAULT_BRANCH" ]; then
-              export BUILD_TAG=weekly-$(date "+%Y.%m.%d")
-            else
-              # Sanitize branch name for use in a tag (replace non-alphanumeric with -)
-              SAFE_BRANCH=$(echo "$BRANCH" | sed 's/[^a-zA-Z0-9._-]/-/g')
-              export BUILD_TAG=${SAFE_BRANCH}-$(date "+%Y.%m.%d")
-            fi
-            gh release create ${BUILD_TAG} --title "Development Build ${BUILD_TAG}" \
+            V_MAJOR=$(python3 -c "import json;print(json.load(open('version.json'))['version_major'])")
+            V_MINOR=$(python3 -c "import json;print(json.load(open('version.json'))['version_minor'])")
+            V_PATCH=$(python3 -c "import json;print(json.load(open('version.json'))['version_patch'])")
+            V_SUFFIX="dev"
+            BUILD_TAG="weekly-$(date "+%Y.%m.%d")"
+            gh release create "$BUILD_TAG" --target "$GITHUB_SHA" --title "Development Build ${BUILD_TAG}" \
                                            -F .github/workflows/weekly-build-notes.md \
                                            --prerelease || \
-            gh release view ${BUILD_TAG} > /dev/null  # fail if it doesn't exist
+            gh release view "$BUILD_TAG" > /dev/null
           fi
           echo "BUILD_TAG=${BUILD_TAG}" >> "$GITHUB_ENV"
           echo "build_tag=${BUILD_TAG}" >> "$GITHUB_OUTPUT"
+          echo "v_major=${V_MAJOR}" >> "$GITHUB_OUTPUT"
+          echo "v_minor=${V_MINOR}" >> "$GITHUB_OUTPUT"
+          echo "v_patch=${V_PATCH}" >> "$GITHUB_OUTPUT"
+          echo "v_suffix=${V_SUFFIX}" >> "$GITHUB_OUTPUT"
+
+      - name: Apply version to version.json
+        shell: bash -l {0}
+        env:
+          V_MAJOR: ${{ steps.get_tag.outputs.v_major }}
+          V_MINOR: ${{ steps.get_tag.outputs.v_minor }}
+          V_PATCH: ${{ steps.get_tag.outputs.v_patch }}
+          V_SUFFIX: ${{ steps.get_tag.outputs.v_suffix }}
+        run: |
+          set -euo pipefail
+          python3 -c "import json,os; p='version.json'; d=json.load(open(p)); d.update(version_major=int(os.environ['V_MAJOR']), version_minor=int(os.environ['V_MINOR']), version_patch=int(os.environ['V_PATCH']), version_suffix=os.environ['V_SUFFIX']); json.dump(d, open(p,'w'), indent=2); open(p,'a').write('\n')"
 
       - name: Trigger notes updater workflow (only for weekly)
         if: startsWith(steps.get_tag.outputs.build_tag, 'weekly-')
@@ -153,6 +194,17 @@ jobs:
           fetch-depth: 2
           fetch-tags: true
           submodules: 'recursive'
+
+      - name: Apply version to version.json
+        shell: bash
+        env:
+          V_MAJOR: ${{ needs.upload_src.outputs.v_major }}
+          V_MINOR: ${{ needs.upload_src.outputs.v_minor }}
+          V_PATCH: ${{ needs.upload_src.outputs.v_patch }}
+          V_SUFFIX: ${{ needs.upload_src.outputs.v_suffix }}
+        run: |
+          set -euo pipefail
+          python3 -c "import json,os; p='version.json'; d=json.load(open(p)); d.update(version_major=int(os.environ['V_MAJOR']), version_minor=int(os.environ['V_MINOR']), version_patch=int(os.environ['V_PATCH']), version_suffix=os.environ['V_SUFFIX']); json.dump(d, open(p,'w'), indent=2); open(p,'a').write('\n')"
 
       - uses: prefix-dev/setup-pixi@a09b6247153796b190642a2b53fac4241043cf6f # v0.10.0
         with:
