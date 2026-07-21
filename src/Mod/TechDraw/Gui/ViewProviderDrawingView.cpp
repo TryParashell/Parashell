@@ -550,7 +550,7 @@ std::vector<App::DocumentObject*> ViewProviderDrawingView::claimChildren() const
 void ViewProviderDrawingView::fixColorAlphaValues()
 {
     if (!Preferences::fixColorAlphaOnLoad() ||
-        checkMinimumDocumentVersion(Base::Version::v1_1)) {
+        checkMinimumDocumentVersion(Base::Version::v1_0)) {
         return;
     }
 
