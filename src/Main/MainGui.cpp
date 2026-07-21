@@ -42,7 +42,6 @@
 #include <QApplication>
 #include <QLocale>
 #include <QMessageBox>
-#include <QStandardPaths>
 
 // FreeCAD header
 #include <App/Application.h>
@@ -105,19 +104,6 @@ static bool inGuiMode()
     return App::Application::Config()["RunMode"] == "Gui"
         || App::Application::Config()["RunMode"] == "Internal";
 }
-
-#if defined(FC_OS_LINUX) || defined(FC_OS_BSD)
-static bool desktopFileIsAvailable(const QString& desktopFileName)
-{
-    const QString desktopFile = desktopFileName + QStringLiteral(".desktop");
-    return !QStandardPaths::locate(QStandardPaths::ApplicationsLocation, desktopFile).isEmpty();
-}
-#else
-static bool desktopFileIsAvailable(const QString&)
-{
-    return true;
-}
-#endif
 
 static void displayInfo(const std::string& msg, bool preformatted = true)
 {
@@ -250,9 +236,7 @@ int main(int argc, char** argv)
         const QString desktopFileName = QString::fromStdString(
             App::Application::Config()["DesktopFileName"]
         );
-        if (desktopFileIsAvailable(desktopFileName)) {
-            QGuiApplication::setDesktopFileName(desktopFileName);
-        }
+        QGuiApplication::setDesktopFileName(desktopFileName);
 
 #if defined(_MSC_VER)
         // create a dump file when the application crashes
