@@ -39,6 +39,7 @@
 #include <TopTools_IndexedMapOfShape.hxx>
 
 
+#include <App/Application.h>
 #include <App/Document.h>
 #include <Base/Exception.h>
 #include <Base/ProgramVersion.h>
@@ -505,8 +506,10 @@ void Extrusion::Restore(Base::XMLReader& reader)
 {
     Part::Feature::Restore(reader);
 
-    // for 1.0 the inner wire taper was not inverted due to a bug
-    if (Base::getVersion(reader.ProgramVersion) == Base::Version::v1_0) {
+    // In genuine FreeCAD 1.0 only, the inner wire taper was not inverted due to a bug. Guard against
+    // a fork that reuses the 1.0 version number so it does not misfire on its own current files.
+    const Base::Version fileVersion = Base::getVersion(reader.ProgramVersion);
+    if (fileVersion == Base::Version::v1_0 && fileVersion < App::Application::getBuildVersion()) {
         InnerWireTaper.setValue(static_cast<long>(Part::InnerWireTaper::SameAsOuter));
     }
 }

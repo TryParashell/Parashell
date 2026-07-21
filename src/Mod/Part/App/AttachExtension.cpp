@@ -27,6 +27,7 @@
 #include <Base/ProgramVersion.h>
 #include <Base/Tools.h>
 
+#include <App/Application.h>
 #include <App/Document.h>
 #include <App/Datums.h>
 #include <App/ObjectIdentifier.h>
@@ -530,9 +531,11 @@ void AttachExtension::handleLegacyTangentPlaneOrientation()
         return;
     }
 
-    // check stored document program version (applies to v1.0 and earlier only)
-    if (Base::getVersion(getExtendedObject()->getDocument()->getProgramVersion())
-        > Base::Version::v1_0) {
+    // This applies to genuine FreeCAD v1.0 and earlier only. Guard against a fork that reuses the
+    // 1.0 version number so it does not misfire on its own current files.
+    const Base::Version fileVersion =
+        Base::getVersion(getExtendedObject()->getDocument()->getProgramVersion());
+    if (fileVersion > Base::Version::v1_0 || !(fileVersion < App::Application::getBuildVersion())) {
         return;
     }
 

@@ -2430,11 +2430,13 @@ unsigned int PropertyBoolList::getMemSize() const
 
 namespace
 {
-/// The definition of "alpha" was corrected upstream in FreeCAD 1.1 and ships in every Parashell
-/// release starting with 1.0 -- returns true only for files that pre-date that correction.
+/// The definition of "alpha" was corrected upstream in FreeCAD 1.1. A file needs converting only
+/// if it pre-dates that correction AND was written by a build older than the one now running, so a
+/// fork that ships the correction under its own version number never re-converts its own files.
 bool readerRequiresAlphaConversion(const Base::XMLReader &reader)
 {
-    return Base::getVersion(reader.ProgramVersion) < Base::Version::v1_0;
+    const Base::Version fileVersion = Base::getVersion(reader.ProgramVersion);
+    return fileVersion < Base::Version::v1_1 && fileVersion < App::Application::getBuildVersion();
 }
 
 /// Given a material, invert the alpha channel of all of its colors.

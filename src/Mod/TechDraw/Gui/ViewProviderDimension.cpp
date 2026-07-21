@@ -366,7 +366,8 @@ void ViewProviderDimension::finishRestoring()
 void ViewProviderDimension::fixTextSize()
 {
     App::Document* ourDoc = getDocument()->getDocument();
-    if (checkMinimumDocumentVersion(ourDoc, Base::Version::v1_1)) {
+    if (checkMinimumDocumentVersion(ourDoc, Base::Version::v1_1)
+        || checkMinimumDocumentVersion(ourDoc, App::Application::getBuildVersion())) {
         return;
     }
 
@@ -381,7 +382,8 @@ void ViewProviderDimension::fixTextSize()
 void ViewProviderDimension::fixArrowSize()
 {
     App::Document* ourDoc = getDocument()->getDocument();
-    if (checkMinimumDocumentVersion(ourDoc, Base::Version::v1_1)) {
+    if (checkMinimumDocumentVersion(ourDoc, Base::Version::v1_1)
+        || checkMinimumDocumentVersion(ourDoc, App::Application::getBuildVersion())) {
         return;
     }
 
