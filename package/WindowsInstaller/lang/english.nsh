@@ -45,6 +45,15 @@ ${LangFileString} AlreadyInstalled "Parashell ${APP_SERIES_KEY2} is already inst
 				Do you nevertheless want to install Parashell over the existing version?"
 ${LangFileString} NewerInstalled "You are trying to install an older version of Parashell than what you have installed.$\r$\n\
 				  If you really want this, you must uninstall the existing Parashell $OldVersionNumber before."
+${LangFileString} UpdateAvailable "A newer version of Parashell ($UpdateVersion) is available.$\r$\n\
+				You are about to install ${APP_VERSION}.$\r$\n\
+				$\r$\n\
+				Click OK to download and install $UpdateVersion now,$\r$\n\
+				or Cancel to continue installing ${APP_VERSION}."
+${LangFileString} UpdateDownloading "Downloading the latest version of Parashell..."
+${LangFileString} UpdateDownloadFailed "The update could not be downloaded automatically.$\r$\n\
+				Installation of the current version will continue.$\r$\n\
+				You can download the latest version later from parashell.cloud/."
 
 #${LangFileString} FinishPageMessage "Congratulations! Parashell has been installed successfully.$\r$\n\
 #					$\r$\n\

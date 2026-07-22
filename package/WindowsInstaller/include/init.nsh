@@ -130,7 +130,13 @@ Function .onInit
   ${endif}
   # plugin must be unloaded
   ${nsProcess::Unload}
-  
+
+  # offer the newest release from the Dropsite autoupdate feed before installing
+  # an older bundled build (skipped for unattended/silent installs)
+  ${IfNot} ${Silent}
+   Call CheckForUpdates
+  ${endif}
+
   # initialize the multi-user installer UI
   !insertmacro MULTIUSER_INIT
 

@@ -16,6 +16,9 @@ Section -InstallData
   # Registry information
   WriteRegStr SHCTX ${APP_REGKEY} "" $INSTDIR
   WriteRegStr SHCTX ${APP_REGKEY} "Version" "${APP_VERSION_NUMBER}"
+  # Dropsite autoupdate feed so the installed app can check for newer releases
+  WriteRegStr SHCTX ${APP_REGKEY} "UpdateCheckURL" "${DROPSITE_CHECK_URL}"
+  WriteRegStr SHCTX ${APP_REGKEY} "UpdateFeedURL" "${DROPSITE_LATEST_URL}"
   
   # Start Menu shortcut
   SetOutPath "$INSTDIR\bin" # this is the folder in which the shortcut is executed

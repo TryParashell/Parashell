@@ -50,6 +50,9 @@ ManifestDPIAware true
 # Set of various macros and functions
 !include include\utils.nsh
 
+# Dropsite autoupdate check
+!include include\update.nsh
+
 # set up the installer pages
 !include include\gui.nsh
 

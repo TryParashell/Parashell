@@ -54,6 +54,13 @@ Configuration and variables of FreeCAD installer
 !define APP_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${SETUP_UNINSTALLER_KEY}"
 
 #--------------------------------
+# Dropsite autoupdate feed (api8.parashell.cloud)
+
+!define DROPSITE_HOST "api8.parashell.cloud"
+!define DROPSITE_CHECK_URL "https://${DROPSITE_HOST}/check"
+!define DROPSITE_LATEST_URL "https://${DROPSITE_HOST}/latest"
+
+#--------------------------------
 # Setup settings
 
 !define SETUP_EXE ${ExeFile}
@@ -80,3 +87,6 @@ Var StartmenuFolder
 Var String
 Var UserList
 Var LangName
+Var UpdateUrl
+Var UpdateVersion
+Var UpdateFile
