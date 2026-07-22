@@ -28,6 +28,7 @@
 #include <fastsignals/signal.h>
 #include <QtCore/qtextstream.h>
 
+#include <cstdint>
 #include <deque>
 #include <list>
 #include <vector>
@@ -58,6 +59,7 @@ namespace Base
 {
 class ConsoleObserverStd;
 class ConsoleObserverFile;
+enum class Version : std::uint8_t;
 }
 
 namespace App
@@ -794,6 +796,9 @@ public:
 
     /// Get the executable name with version information.
     static std::string getNameWithVersion();
+
+    /// The running build's version, parsed for document-format migration decisions.
+    static Base::Version getBuildVersion();
 
     /// Check whether this is a development version.
     static bool isDevelopmentVersion();

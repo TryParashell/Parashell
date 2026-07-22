@@ -34,6 +34,7 @@
 #include "TopoShapeOpCode.h"
 #include "modelRefine.h"
 
+#include <App/Application.h>
 #include <Base/ProgramVersion.h>
 
 
@@ -113,8 +114,10 @@ void MultiCommon::Restore(Base::XMLReader& reader)
 {
     Feature::Restore(reader);
 
-    // For 1.0 and 1.0 only the order was common of first and the rest due to a bug
-    if (Base::getVersion(reader.ProgramVersion) == Base::Version::v1_0) {
+    // In genuine FreeCAD 1.0 only, the order was common of first and the rest due to a bug. Guard
+    // against a fork that reuses the 1.0 version number so it does not misfire on its own files.
+    const Base::Version fileVersion = Base::getVersion(reader.ProgramVersion);
+    if (fileVersion == Base::Version::v1_0 && fileVersion < App::Application::getBuildVersion()) {
         Behavior.setValue(CommonOfFirstAndRest);
     }
 

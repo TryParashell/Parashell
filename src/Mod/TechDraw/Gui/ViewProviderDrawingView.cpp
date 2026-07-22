@@ -549,8 +549,9 @@ std::vector<App::DocumentObject*> ViewProviderDrawingView::claimChildren() const
 //! convert old style transparency values in PropertyColor to new style alpha channel values
 void ViewProviderDrawingView::fixColorAlphaValues()
 {
-    if (!Preferences::fixColorAlphaOnLoad() ||
-        checkMinimumDocumentVersion(Base::Version::v1_1)) {
+    if (!Preferences::fixColorAlphaOnLoad()
+        || checkMinimumDocumentVersion(Base::Version::v1_1)
+        || checkMinimumDocumentVersion(App::Application::getBuildVersion())) {
         return;
     }
 

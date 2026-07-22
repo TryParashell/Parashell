@@ -170,9 +170,12 @@ class _ArchPipe(ArchComponent.Component):
 
         ArchComponent.Component.onDocumentRestored(self, obj)
         self.setProperties(obj)
+        program_version = FreeCAD.ActiveDocument.getProgramVersion().split()[0]
+        running_version = ".".join(FreeCAD.Version()[0:2])
         if (
             obj.ProfileType == "Rectangle"
-            and FreeCAD.ActiveDocument.getProgramVersion().split()[0] < "1.1"
+            and program_version < "1.1"
+            and program_version < running_version
         ):
             # in older versions Height and Width are inverted
             obj.Height, obj.Width = obj.Width, obj.Height

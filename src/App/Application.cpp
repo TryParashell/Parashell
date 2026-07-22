@@ -77,6 +77,7 @@
 // FreeCAD Base header
 #include <Base/AxisPy.h>
 #include <Base/BaseClass.h>
+#include <Base/ProgramVersion.h>
 #include <Base/BoundBoxPy.h>
 #include <Base/ConsoleObserver.h>
 #include <Base/ServiceProvider.h>
@@ -1399,6 +1400,13 @@ bool Application::isDevelopmentVersion()
         return FCVersionSuffix;
     }();
     return suffix == "dev";
+}
+
+Base::Version Application::getBuildVersion()
+{
+    auto config = Application::Config();
+    const std::string version = config["BuildVersionMajor"] + "." + config["BuildVersionMinor"];
+    return Base::getVersion(version);
 }
 
 const std::unique_ptr<ApplicationDirectories>& Application::directories() {
