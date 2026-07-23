@@ -481,7 +481,7 @@ Free Turntable: the part will be rotated around the Z-axis.
          </string>
         </property>
         <property name="currentIndex">
-         <number>4</number>
+         <number>1</number>
         </property>
         <item>
          <property name="text">
@@ -535,7 +535,7 @@ Free Turntable: the part will be rotated around the Z-axis.
          <string>Rotations in 3D will use current cursor position as center for rotation</string>
         </property>
         <property name="currentIndex">
-         <number>0</number>
+         <number>1</number>
         </property>
         <item>
          <property name="text">

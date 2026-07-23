@@ -177,11 +177,11 @@ void DlgSettingsNavigation::loadSettings()
         ui->comboNavigationStyle->setCurrentIndex(index);
     }
 
-    index = hGrp->GetInt("OrbitStyle", int(NavigationStyle::RoundedArcball));
+    index = hGrp->GetInt("OrbitStyle", int(NavigationStyle::Trackball));
     index = Base::clamp(index, 0, ui->comboOrbitStyle->count() - 1);
     ui->comboOrbitStyle->setCurrentIndex(index);
 
-    index = hGrp->GetInt("RotationMode", 0);
+    index = hGrp->GetInt("RotationMode", 1);
     ui->comboRotationMode->setCurrentIndex(index);
 
     bool showNaviCube = hGrp->GetBool("ShowNaviCube", true);

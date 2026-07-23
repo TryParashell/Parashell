@@ -290,7 +290,7 @@ void View3DSettings::OnChange(ParameterGrp::SubjectType& rCaller, ParameterGrp::
         }
     }
     else if (strcmp(Reason, "OrbitStyle") == 0) {
-        int style = rGrp.GetInt("OrbitStyle", 4);
+        int style = rGrp.GetInt("OrbitStyle", int(NavigationStyle::Trackball));
         for (auto _viewer : _viewers) {
             _viewer->navigationStyle()->setOrbitStyle(NavigationStyle::OrbitStyle(style));
         }

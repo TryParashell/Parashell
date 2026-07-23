@@ -82,8 +82,8 @@ void ProgramInformation::getNavigationStyleInformation(std::stringstream& str)
     constexpr auto sLen = std::string_view("NavigationStyle").length();
     str << "Navigation Style/Orbit Style/Rotation Mode: "
         << navStyle.substr(pLen, navStyle.length() - sLen - pLen) << "/"
-        << orbitStyle[hGrp->GetInt("OrbitStyle", 4)] << "/"
-        << rotMode[hGrp->GetInt("RotationMode", 0)] << "\n";
+        << orbitStyle[hGrp->GetInt("OrbitStyle", 1)] << "/"
+        << rotMode[hGrp->GetInt("RotationMode", 1)] << "\n";
 }
 
 void ProgramInformation::getDpiInformation(std::stringstream& str)
