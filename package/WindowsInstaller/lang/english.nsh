@@ -48,10 +48,12 @@ ${LangFileString} NewerInstalled "You are trying to install an older version of 
 ${LangFileString} UpdateAvailable "A newer version of Parashell ($UpdateVersion) is available.$\r$\n\
 				You are about to install ${APP_VERSION}.$\r$\n\
 				$\r$\n\
-				Click OK to download and install $UpdateVersion now,$\r$\n\
-				or Cancel to continue installing ${APP_VERSION}."
-${LangFileString} UpdateDownloading "Downloading the latest version of Parashell..."
-${LangFileString} UpdateDownloadFailed "The update could not be downloaded automatically.$\r$\n\
+				Click OK to securely download $UpdateVersion in the background.$\r$\n\
+				This installer will close, and the new installer will open when ready.$\r$\n\
+				Click Cancel to continue installing ${APP_VERSION}."
+${LangFileString} UpdateStarted "Parashell $UpdateVersion is downloading securely in the background.$\r$\n\
+				The new installer will open automatically after verification."
+${LangFileString} UpdateDownloadFailed "The background updater could not be started.$\r$\n\
 				Installation of the current version will continue.$\r$\n\
 				You can download the latest version later from parashell.cloud/."
 

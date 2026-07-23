@@ -1,23 +1,20 @@
-/*
-update.nsh
-
-Queries the Dropsite autoupdate feed (api8.parashell.cloud) for the latest
-published release. When the bundled installer is older than what is available,
-the user is offered a one-click update: the newest installer is downloaded and
-launched, and the current installer bows out.
-*/
-
 Function CheckForUpdates
 
-  StrCpy $UpdateUrl ""
   StrCpy $UpdateVersion ""
-  StrCpy $UpdateFile ""
+  ReadEnvStr $2 "ProgramData"
+  ${if} $2 == ""
+   Return
+  ${endif}
+  StrCpy $UpdateScript "$2\Parashell\Updater\ParashellUpdater.ps1"
+  StrCpy $UpdateManifest "$2\Parashell\Updater\update-manifest.json"
+  InitPluginsDir
+  SetOutPath "$PLUGINSDIR"
+  File /oname=ParashellUpdater.ps1 "${__FILEDIR__}\..\updater\ParashellUpdater.ps1"
 
-  nsExec::ExecToStack `powershell -NoProfile -NonInteractive -ExecutionPolicy Bypass -Command "$$ProgressPreference='SilentlyContinue'; try { $$resp = Invoke-RestMethod -UseBasicParsing -TimeoutSec 10 -Uri '${DROPSITE_CHECK_URL}?current=${APP_VERSION}'; if ($$resp.update_available) { Write-Output ($$resp.latest.version + '|' + $$resp.latest.download_url) } } catch { exit 1 }"`
-  Pop $0 # return/exit code
-  Pop $1 # captured stdout
+  nsExec::ExecToStack `"$SYSDIR\WindowsPowerShell\v1.0\powershell.exe" -NoLogo -NoProfile -NonInteractive -ExecutionPolicy Bypass -File "$PLUGINSDIR\ParashellUpdater.ps1" -Mode Check -CurrentVersion "${APP_VERSION_NUMBER}" -FeedUrl "${DROPSITE_CHECK_URL}" -ManifestPath "$UpdateManifest" -BootstrapPath "$EXEPATH"`
+  Pop $0
+  Pop $1
 
-  # network failure, timeout, or a non-zero PowerShell exit must never block installing
   ${if} $0 != "0"
    Return
   ${endif}
@@ -29,66 +26,23 @@ Function CheckForUpdates
   ${if} $1 == ""
    Return
   ${endif}
+  StrCpy $UpdateVersion $1
 
-  # split "version|download_url" on the first "|"
-  StrCpy $String $1
-  StrCpy $Search "|"
-  Call StrPoint
-  ${if} $Pointer == "-1"
-   Return
-  ${endif}
-  StrCpy $UpdateVersion $1 $Pointer
-  IntOp $3 $Pointer + 1
-  StrCpy $UpdateUrl $1 "" $3
-
-  # only trust an absolute https/http download target
-  StrCpy $2 $UpdateUrl 4
-  ${if} $2 != "http"
-   Return
-  ${endif}
-
-  MessageBox MB_OKCANCEL|MB_ICONQUESTION "$(UpdateAvailable)" /SD IDCANCEL IDOK DoUpdate
+  MessageBox MB_OKCANCEL|MB_ICONQUESTION "$(UpdateAvailable)" /SD IDCANCEL IDOK StartBackgroundUpdate
   Return
 
-  DoUpdate:
-   ${IfNot} ${Silent}
-    Banner::show /NOUNLOAD "$(UpdateDownloading)"
-   ${endif}
-
-   nsExec::ExecToStack `powershell -NoProfile -NonInteractive -ExecutionPolicy Bypass -Command "$$ProgressPreference='SilentlyContinue'; try { $$u='$UpdateUrl'; $$ext=[System.IO.Path]::GetExtension(([System.Uri]$$u).AbsolutePath); if (-not $$ext) { $$ext='.exe' }; $$out=Join-Path $$env:TEMP ('Parashell-Update-' + [System.Guid]::NewGuid().ToString('N') + $$ext); Invoke-WebRequest -UseBasicParsing -Uri $$u -OutFile $$out; Write-Output $$out } catch { exit 1 }"`
-   Pop $0 # return/exit code
-   Pop $1 # captured stdout (downloaded file path)
-
-   ${IfNot} ${Silent}
-    Banner::destroy
-   ${endif}
-
-   ${if} $0 != "0"
-    MessageBox MB_OK|MB_ICONEXCLAMATION "$(UpdateDownloadFailed)" /SD IDOK
-    Return
-   ${endif}
-
-   Call TrimUpdateOutput
-   StrCpy $UpdateFile $1
-   ${if} $UpdateFile == ""
-    MessageBox MB_OK|MB_ICONEXCLAMATION "$(UpdateDownloadFailed)" /SD IDOK
-    Return
-   ${endif}
-   IfFileExists "$UpdateFile" 0 DownloadMissing
-
+  StartBackgroundUpdate:
+   System::Call 'kernel32::GetCurrentProcessId() i .r2'
    ClearErrors
-   ExecShell "open" "$UpdateFile"
-   IfErrors LaunchFailed
+   Exec '"$SYSDIR\WindowsPowerShell\v1.0\powershell.exe" -NoLogo -NoProfile -NonInteractive -WindowStyle Hidden -ExecutionPolicy Bypass -File "$UpdateScript" -Mode Download -ManifestPath "$UpdateManifest" -ParentProcessId $2'
+   IfErrors UpdateLaunchFailed
+   MessageBox MB_OK|MB_ICONINFORMATION "$(UpdateStarted)" /SD IDOK
    Quit
 
-   DownloadMissing:
-   LaunchFailed:
-    MessageBox MB_OK|MB_ICONEXCLAMATION "$(UpdateDownloadFailed)" /SD IDOK
+  UpdateLaunchFailed:
+   MessageBox MB_OK|MB_ICONEXCLAMATION "$(UpdateDownloadFailed)" /SD IDOK
 
 FunctionEnd
-
-#--------------------------------
-# strips trailing whitespace and newlines from the captured stdout in $1
 
 Function TrimUpdateOutput
 

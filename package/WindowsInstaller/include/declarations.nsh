@@ -87,6 +87,6 @@ Var StartmenuFolder
 Var String
 Var UserList
 Var LangName
-Var UpdateUrl
+Var UpdateManifest
+Var UpdateScript
 Var UpdateVersion
-Var UpdateFile
