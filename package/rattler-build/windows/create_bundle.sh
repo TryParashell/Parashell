@@ -85,8 +85,7 @@ set -euo pipefail
 SIGN_DIR="${version_name}"
 
 if [[ "${UPLOAD_RELEASE:-false}" == "true" && "${MAKE_INSTALLER:-false}" == "true" && "${WINDOWS_SIGN_RELEASE:-0}" != "1" ]]; then
-  echo "Publishing a Windows installer requires Azure Artifact Signing."
-  exit 1
+  echo "Azure Artifact Signing is unavailable; publishing an unsigned installer that will not offer automatic updates."
 fi
 
 if [[ "${WINDOWS_SIGN_RELEASE:-0}" == "1" ]]; then
