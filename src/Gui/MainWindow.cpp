@@ -29,16 +29,23 @@
 #include <QCloseEvent>
 #include <QContextMenuEvent>
 #include <QDesktopServices>
+#include <QDir>
 #include <QDockWidget>
+#include <QFileInfo>
 #include <QFontMetrics>
 #include <QHash>
 #include <QKeySequence>
 #include <QLabel>
 #include <QMdiSubWindow>
+#include <QJsonDocument>
+#include <QJsonObject>
 #include <QMenu>
 #include <QMenuBar>
 #include <QMessageBox>
 #include <QMimeData>
+#include <QNetworkAccessManager>
+#include <QNetworkReply>
+#include <QNetworkRequest>
 #include <QOpenGLWidget>
 #include <QPainter>
 #include <QProcess>
@@ -51,6 +58,7 @@
 #include <QThread>
 #include <QTimer>
 #include <QToolBar>
+#include <QUrl>
 #include <QUrlQuery>
 #include <QWhatsThis>
 #include <QWindow>
@@ -67,6 +75,7 @@
 #endif
 
 #include <algorithm>
+#include <functional>
 #include <vector>
 #include <boost/algorithm/string/predicate.hpp>
 
@@ -1818,6 +1827,237 @@ void MainWindow::closeEvent(QCloseEvent* e)
     }
 }
 
+namespace
+{
+
+ParameterGrp::handle parashellUpdatePreferences()
+{
+    return App::GetApplication().GetParameterGroupByPath(
+        "User parameter:BaseApp/Preferences/Update");
+}
+
+QString parashellCurrentVersion()
+{
+    const auto& config = App::Application::Config();
+    const auto valueOf = [&config](const char* key) -> std::string {
+        const auto it = config.find(key);
+        return it != config.end() ? it->second : std::string();
+    };
+    const std::string major = valueOf("BuildVersionMajor");
+    const std::string minor = valueOf("BuildVersionMinor");
+    const std::string point = valueOf("BuildVersionPoint");
+    if (major.empty() || minor.empty() || point.empty()) {
+        return {};
+    }
+    return QString::fromStdString(major + "." + minor + "." + point);
+}
+
+void parashellShowUpdatePrompt(QWidget* parent, const QString& version, const QString& informative,
+                               const std::function<void()>& onAccept)
+{
+    ParameterGrp::handle hGrp = parashellUpdatePreferences();
+    const QString skipped = QString::fromStdString(hGrp->GetASCII("SkippedVersion", ""));
+    if (version == skipped) {
+        return;
+    }
+
+    QMessageBox box(parent);
+    box.setWindowTitle(MainWindow::tr("Parashell update available"));
+    box.setIcon(QMessageBox::Question);
+    box.setText(MainWindow::tr("A new version of Parashell (%1) is available.").arg(version));
+    box.setInformativeText(informative);
+    box.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+    box.setDefaultButton(QMessageBox::Yes);
+    if (box.exec() == QMessageBox::Yes) {
+        onAccept();
+    }
+    else {
+        hGrp->SetASCII("SkippedVersion", version.toUtf8().constData());
+    }
+}
+
+#if defined(Q_OS_WIN)
+
+QString parashellPowerShell()
+{
+    QString root = qEnvironmentVariable("SystemRoot");
+    if (root.isEmpty()) {
+        root = QStringLiteral("C:/Windows");
+    }
+    return QDir::cleanPath(
+        root + QStringLiteral("/System32/WindowsPowerShell/v1.0/powershell.exe"));
+}
+
+QString parashellUpdaterScript()
+{
+    const QString appDir = QCoreApplication::applicationDirPath();
+    QStringList candidates;
+    candidates << QDir::cleanPath(appDir + QStringLiteral("/../updater/ParashellUpdater.ps1"))
+               << QDir::cleanPath(appDir + QStringLiteral("/updater/ParashellUpdater.ps1"));
+    const QString programData = qEnvironmentVariable("ProgramData");
+    if (!programData.isEmpty()) {
+        candidates << QDir::cleanPath(
+            programData + QStringLiteral("/Parashell/Updater/ParashellUpdater.ps1"));
+    }
+    for (const QString& candidate : candidates) {
+        if (QFileInfo::exists(candidate)) {
+            return candidate;
+        }
+    }
+    return {};
+}
+
+QString parashellUpdateManifest()
+{
+    const QString programData = qEnvironmentVariable("ProgramData");
+    if (programData.isEmpty()) {
+        return {};
+    }
+    return QDir::cleanPath(
+        programData + QStringLiteral("/Parashell/Updater/update-manifest.json"));
+}
+
+void parashellStartDownloadAndQuit(QWidget* parent, const QString& script, const QString& manifest)
+{
+    QStringList args;
+    args << QStringLiteral("-NoLogo") << QStringLiteral("-NoProfile")
+         << QStringLiteral("-NonInteractive") << QStringLiteral("-WindowStyle")
+         << QStringLiteral("Hidden") << QStringLiteral("-ExecutionPolicy")
+         << QStringLiteral("Bypass") << QStringLiteral("-File") << script
+         << QStringLiteral("-Mode") << QStringLiteral("Download")
+         << QStringLiteral("-ManifestPath") << manifest
+         << QStringLiteral("-ParentProcessId")
+         << QString::number(QCoreApplication::applicationPid());
+    if (!QProcess::startDetached(parashellPowerShell(), args)) {
+        QMessageBox::warning(
+            parent,
+            MainWindow::tr("Parashell update"),
+            MainWindow::tr("The update could not be started. Please download the latest "
+                           "version of Parashell manually."));
+        return;
+    }
+    getMainWindow()->close();
+    QApplication::quit();
+}
+
+void parashellCheckForUpdates(QWidget* parent)
+{
+    const QString script = parashellUpdaterScript();
+    const QString manifest = parashellUpdateManifest();
+    const QString version = parashellCurrentVersion();
+    if (script.isEmpty() || manifest.isEmpty() || version.isEmpty()) {
+        return;
+    }
+
+    auto* process = new QProcess(parent);
+    process->setProgram(parashellPowerShell());
+    process->setArguments(QStringList()
+        << QStringLiteral("-NoLogo") << QStringLiteral("-NoProfile")
+        << QStringLiteral("-NonInteractive") << QStringLiteral("-ExecutionPolicy")
+        << QStringLiteral("Bypass") << QStringLiteral("-File") << script
+        << QStringLiteral("-Mode") << QStringLiteral("Check")
+        << QStringLiteral("-CurrentVersion") << version
+        << QStringLiteral("-FeedUrl") << QStringLiteral("https://api8.parashell.cloud/check")
+        << QStringLiteral("-ManifestPath") << manifest
+        << QStringLiteral("-BootstrapPath") << QCoreApplication::applicationFilePath());
+
+    QObject::connect(process, &QProcess::errorOccurred, parent, [process](QProcess::ProcessError) {
+        process->disconnect();
+        process->deleteLater();
+    });
+
+    QObject::connect(
+        process,
+        &QProcess::finished,
+        parent,
+        [parent, process, script, manifest](int exitCode, QProcess::ExitStatus exitStatus) {
+            const QByteArray stdoutData = process->readAllStandardOutput();
+            process->disconnect();
+            process->deleteLater();
+            if (exitStatus != QProcess::NormalExit || exitCode != 0) {
+                return;
+            }
+            const QStringList lines = QString::fromUtf8(stdoutData)
+                                          .split(QRegularExpression(QStringLiteral("[\\r\\n]+")),
+                                                 Qt::SkipEmptyParts);
+            if (lines.isEmpty()) {
+                return;
+            }
+            const QString newVersion = lines.last().trimmed();
+            static const QRegularExpression versionRe(QStringLiteral("^\\d+\\.\\d+\\.\\d+$"));
+            if (!versionRe.match(newVersion).hasMatch()) {
+                return;
+            }
+            parashellShowUpdatePrompt(
+                parent,
+                newVersion,
+                MainWindow::tr("Parashell will close so the update can be installed. You can turn "
+                               "automatic update checks off in Preferences > General."),
+                [parent, script, manifest]() {
+                    parashellStartDownloadAndQuit(parent, script, manifest);
+                });
+        });
+
+    process->start();
+}
+
+#else  // Q_OS_WIN
+
+void parashellCheckForUpdates(QWidget* parent)
+{
+    const QString version = parashellCurrentVersion();
+    if (version.isEmpty()) {
+        return;
+    }
+
+    auto* manager = new QNetworkAccessManager(parent);
+    QUrl url(QStringLiteral("https://api8.parashell.cloud/check"));
+    QUrlQuery query;
+    query.addQueryItem(QStringLiteral("current"), version);
+    url.setQuery(query);
+    QNetworkRequest request(url);
+    request.setRawHeader("Accept", "application/json");
+
+    QNetworkReply* reply = manager->get(request);
+    QObject::connect(reply, &QNetworkReply::finished, parent, [parent, reply, manager]() {
+        const QNetworkReply::NetworkError error = reply->error();
+        const QByteArray data = reply->readAll();
+        reply->deleteLater();
+        manager->deleteLater();
+        if (error != QNetworkReply::NoError) {
+            return;
+        }
+        const QJsonDocument document = QJsonDocument::fromJson(data);
+        if (!document.isObject()) {
+            return;
+        }
+        const QJsonObject object = document.object();
+        if (!object.value(QStringLiteral("update_available")).toBool()) {
+            return;
+        }
+        const QString newVersion = object.value(QStringLiteral("latest"))
+                                       .toObject()
+                                       .value(QStringLiteral("version"))
+                                       .toString();
+        static const QRegularExpression versionRe(QStringLiteral("^\\d+\\.\\d+\\.\\d+$"));
+        if (!versionRe.match(newVersion).hasMatch()) {
+            return;
+        }
+        parashellShowUpdatePrompt(
+            parent,
+            newVersion,
+            MainWindow::tr("Open the download page to get the latest version of Parashell."),
+            []() {
+                QDesktopServices::openUrl(
+                    QUrl(QStringLiteral("https://www.parashell.cloud/download")));
+            });
+    });
+}
+
+#endif  // Q_OS_WIN
+
+}  // namespace
+
 void MainWindow::showEvent(QShowEvent* e)
 {
     std::clog << "Show main window" << std::endl;
@@ -1844,6 +2084,14 @@ void MainWindow::showEvent(QShowEvent* e)
             const bool enabled = box.exec() == QMessageBox::Yes;
             reporting.setConsentGiven(enabled);
             reporting.markConsentAsked();
+        });
+    }
+
+    static bool updateCheckScheduled = false;
+    if (!updateCheckScheduled && parashellUpdatePreferences()->GetBool("AutoCheckEnabled", true)) {
+        updateCheckScheduled = true;
+        QTimer::singleShot(0, this, [this]() {
+            parashellCheckForUpdates(this);
         });
     }
 }

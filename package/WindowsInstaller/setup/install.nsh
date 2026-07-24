@@ -58,7 +58,12 @@ Section -ProgramFiles SecProgramFiles
   File /r "${FILES_FREECAD}\Mod\*.*"
   SetOutPath "$INSTDIR"
   File /r "${FILES_THUMBS}"
-    
+
+  # In-app background updater script used by the running application
+  SetOutPath "$INSTDIR\updater"
+  File "${__FILEDIR__}\..\updater\ParashellUpdater.ps1"
+  SetOutPath "$INSTDIR"
+
   # Create uninstaller
   WriteUninstaller "$INSTDIR\${SETUP_UNINSTALLER}"
 

@@ -221,7 +221,7 @@ function Write-State {
 }
 
 function Invoke-Check {
-    if ($CurrentVersion -notmatch '^\d+\.\d+\.\d+\.\d+$') {
+    if ($CurrentVersion -notmatch '^\d+\.\d+\.\d+(\.\d+)?$') {
         throw "The installed version is invalid."
     }
     $feedUri = Assert-HttpsUri -Value $FeedUrl -AllowedHosts @("api8.parashell.cloud")
