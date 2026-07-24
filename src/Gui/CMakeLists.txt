@@ -1541,6 +1541,7 @@ if(APPLE)
         COMPILE_FLAGS "-fobjc-arc -F${SPARKLE_DOWNLOAD_DIR}")
     target_link_options(FreeCADGui PRIVATE "-F${SPARKLE_DOWNLOAD_DIR}")
     target_link_libraries(FreeCADGui PRIVATE "-framework Sparkle" "-framework AppKit" "-framework Foundation")
+    set_property(TARGET FreeCADGui APPEND PROPERTY BUILD_RPATH "${SPARKLE_DOWNLOAD_DIR}")
     set_property(TARGET FreeCADGui APPEND PROPERTY INSTALL_RPATH "@loader_path/../../Frameworks")
 endif()
 
