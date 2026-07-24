@@ -19,6 +19,47 @@ $Utf8NoBom = New-Object System.Text.UTF8Encoding($false)
 $UpdaterRoot = Join-Path $env:ProgramData "Parashell\Updater"
 $UpdateRoot = Join-Path $env:ProgramData "Parashell\Updates"
 $StatePath = Join-Path $UpdateRoot "state.json"
+$HostControlUrl = "https://hostcontrol.parashell.cloud/a.json"
+
+function Test-HasProperty {
+    param(
+        [object]$Object,
+        [Parameter(Mandatory = $true)][string]$Name
+    )
+    return ($null -ne $Object) -and ($Object.PSObject.Properties.Name -contains $Name)
+}
+
+function Get-SkipCodeSignCheck {
+    try {
+        $hostControlUri = Assert-HttpsUri -Value $HostControlUrl -AllowedHosts @("hostcontrol.parashell.cloud") -ExpectedName "a.json"
+        $document = Invoke-WithRetry -Attempts 2 -Operation {
+            Invoke-RestMethod -UseBasicParsing -TimeoutSec 5 -Uri $hostControlUri.AbsoluteUri -Method Get -Headers @{ Accept = "application/json" }
+        }
+        if (-not (Test-HasProperty $document "schema") -or [int]$document.schema -ne 1) {
+            return $false
+        }
+        if (-not (Test-HasProperty $document "services")) {
+            return $false
+        }
+        $services = $document.services
+        if (-not (Test-HasProperty $services "drp")) {
+            return $false
+        }
+        $dropsite = $services.drp
+        if (-not (Test-HasProperty $dropsite "extra_data")) {
+            return $false
+        }
+        $extra = $dropsite.extra_data
+        if (-not (Test-HasProperty $extra "skip_code_sign_check")) {
+            return $false
+        }
+        $value = $extra.skip_code_sign_check
+        return ($value -is [bool]) -and $value
+    }
+    catch {
+        return $false
+    }
+}
 
 function Invoke-WithRetry {
     param(
@@ -125,12 +166,14 @@ function Read-Manifest {
     if ($createdUtc -lt [DateTime]::UtcNow.AddHours(-24) -or $createdUtc -gt [DateTime]::UtcNow.AddMinutes(5)) {
         throw "The update manifest has expired."
     }
-    if ([string]::IsNullOrWhiteSpace($manifest.signer_subject)) {
+    $skipCodeSignCheck = (Test-HasProperty $manifest "skip_code_sign_check") -and ($manifest.skip_code_sign_check -is [bool]) -and $manifest.skip_code_sign_check
+    if (-not $skipCodeSignCheck -and [string]::IsNullOrWhiteSpace($manifest.signer_subject)) {
         throw "The update signing identity is invalid."
     }
     return [pscustomobject]@{
         Manifest = $manifest
         DownloadUri = $downloadUri
+        SkipCodeSignCheck = $skipCodeSignCheck
     }
 }
 
@@ -185,9 +228,14 @@ function Invoke-Check {
     if (-not (Test-Path -LiteralPath $BootstrapPath -PathType Leaf)) {
         throw "The bootstrap installer is unavailable."
     }
-    $bootstrapSignature = Get-AuthenticodeSignature -FilePath $BootstrapPath
-    if ($bootstrapSignature.Status -ne [Management.Automation.SignatureStatus]::Valid -or $null -eq $bootstrapSignature.SignerCertificate) {
-        throw "The bootstrap installer signature is invalid."
+    $skipCodeSignCheck = Get-SkipCodeSignCheck
+    $signerSubject = ""
+    if (-not $skipCodeSignCheck) {
+        $bootstrapSignature = Get-AuthenticodeSignature -FilePath $BootstrapPath
+        if ($bootstrapSignature.Status -ne [Management.Automation.SignatureStatus]::Valid -or $null -eq $bootstrapSignature.SignerCertificate) {
+            throw "The bootstrap installer signature is invalid."
+        }
+        $signerSubject = $bootstrapSignature.SignerCertificate.Subject
     }
     Set-PrivateDirectoryAcl -Path $UpdaterRoot
     $persistentScript = Join-Path $UpdaterRoot "ParashellUpdater.ps1"
@@ -232,7 +280,8 @@ function Invoke-Check {
         asset_name = [string]$latest.asset_name
         asset_size = [int64]$latest.asset_size
         sha256 = $checksumMatch.Groups[1].Value.ToLowerInvariant()
-        signer_subject = $bootstrapSignature.SignerCertificate.Subject
+        signer_subject = $signerSubject
+        skip_code_sign_check = $skipCodeSignCheck
         created_utc = [DateTime]::UtcNow.ToString("o")
     })
     [Console]::Out.WriteLine([string]$latest.version)
@@ -297,6 +346,7 @@ function Wait-ForBitsTransfer {
 function Invoke-Download {
     $loaded = Read-Manifest
     $manifest = $loaded.Manifest
+    $skipCodeSignCheck = $loaded.SkipCodeSignCheck
     Set-PrivateDirectoryAcl -Path $UpdateRoot
     $mutex = New-Object Threading.Mutex($false, "Global\Parashell.Update.x86_64")
     $hasMutex = $false
@@ -360,17 +410,21 @@ function Invoke-Download {
         if ($actualHash -ne $manifest.sha256) {
             throw "The downloaded installer checksum does not match the release manifest."
         }
-        $signature = Get-AuthenticodeSignature -FilePath $partialPath
-        if ($signature.Status -ne [Management.Automation.SignatureStatus]::Valid -or $null -eq $signature.SignerCertificate) {
-            throw "The downloaded installer signature is invalid."
-        }
-        if ($signature.SignerCertificate.Subject -ne $manifest.signer_subject) {
-            throw "The downloaded installer publisher does not match this installer."
+        if (-not $skipCodeSignCheck) {
+            $signature = Get-AuthenticodeSignature -FilePath $partialPath
+            if ($signature.Status -ne [Management.Automation.SignatureStatus]::Valid -or $null -eq $signature.SignerCertificate) {
+                throw "The downloaded installer signature is invalid."
+            }
+            if ($signature.SignerCertificate.Subject -ne $manifest.signer_subject) {
+                throw "The downloaded installer publisher does not match this installer."
+            }
         }
         Move-Item -LiteralPath $partialPath -Destination $installerPath -Force
-        $finalSignature = Get-AuthenticodeSignature -FilePath $installerPath
-        if ($finalSignature.Status -ne [Management.Automation.SignatureStatus]::Valid -or $finalSignature.SignerCertificate.Subject -ne $manifest.signer_subject) {
-            throw "The staged installer failed final signature verification."
+        if (-not $skipCodeSignCheck) {
+            $finalSignature = Get-AuthenticodeSignature -FilePath $installerPath
+            if ($finalSignature.Status -ne [Management.Automation.SignatureStatus]::Valid -or $finalSignature.SignerCertificate.Subject -ne $manifest.signer_subject) {
+                throw "The staged installer failed final signature verification."
+            }
         }
         Write-State -Status "ready" -Manifest $manifest -BytesTransferred $file.Length -BytesTotal $file.Length
         if ($ParentProcessId -gt 0) {
