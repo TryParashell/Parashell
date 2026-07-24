@@ -21,6 +21,9 @@ macro(InitializeFreeCADBuildOptions)
     option(FREECAD_PARALLEL_LINK_JOBS "Linkage jobs pool size to fit memory limitations.")
     option(BUILD_WITH_CONDA "Set ON if you build FreeCAD with conda" OFF)
     option(BUILD_DYNAMIC_LINK_PYTHON "If OFF extension-modules do not link against python-libraries" ON)
+    option(PARASHELL_STATIC_COMPILER_RUNTIME
+           "Statically link the GNU compiler runtime into CMake-produced binaries (not plugins or CPython extensions)"
+           OFF)
     option(BUILD_TRACY_FRAME_PROFILER "If ON then enables support for the Tracy frame profiler" OFF)
 
     option(INSTALL_TO_SITEPACKAGES "If ON the freecad root namespace (python) is installed into python's site-packages" ON)

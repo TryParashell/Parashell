@@ -144,6 +144,7 @@ Development file for OndselSolver
 #         -DCMAKE_INSTALL_DATAROOTDIR=%{_datadir} \
 
     %cmake \
+        -DPARASHELL_STATIC_COMPILER_RUNTIME:BOOL=ON \
         -DCMAKE_INSTALL_PREFIX=%{_libdir}/%{name} \
         -DCMAKE_INSTALL_DOCDIR=%{_docdir}/%{name} \
         -DCMAKE_INSTALL_INCLUDEDIR=%{_includedir} \

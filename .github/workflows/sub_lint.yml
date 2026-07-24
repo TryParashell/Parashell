@@ -185,7 +185,7 @@ jobs:
       - name: Run CMake # This is needed for Clang tools to work correctly
         if: inputs.changedCppFiles != '' && always()
         run: |
-          mkdir build && cmake -S ./ -B ./build/ -D CMAKE_EXPORT_COMPILE_COMMANDS:BOOL=TRUE
+          mkdir build && cmake -S ./ -B ./build/ -D CMAKE_EXPORT_COMPILE_COMMANDS:BOOL=TRUE -DPARASHELL_STATIC_COMPILER_RUNTIME:BOOL=ON
 
       - name: Check old Qt string-based connections (https://wiki.qt.io/New_Signal_Slot_Syntax)
         if: inputs.checkQtConnections && inputs.changedCppFiles != '' && always()
