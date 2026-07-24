@@ -36,6 +36,16 @@
 	<string>True</string>
 	<key>NSRequiresAquaSystemAppearance</key>
 	<string>False</string>
+	<key>SUFeedURL</key>
+	<string>https://api8.parashell.cloud/appcast.xml</string>
+	<key>SUPublicEDKey</key>
+	<string>SPARKLE_PUBLIC_ED_KEY</string>
+	<key>SUEnableAutomaticChecks</key>
+	<true/>
+	<key>SUScheduledCheckInterval</key>
+	<integer>86400</integer>
+	<key>SUAllowsAutomaticUpdates</key>
+	<false/>
 	<key>CFBundleDocumentTypes</key>
 	<array>
 		<dict>

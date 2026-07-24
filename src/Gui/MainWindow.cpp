@@ -37,6 +37,7 @@
 #include <QKeySequence>
 #include <QLabel>
 #include <QMdiSubWindow>
+#include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QMenu>
@@ -55,6 +56,7 @@
 #include <QSettings>
 #include <QSignalMapper>
 #include <QStatusBar>
+#include <QSysInfo>
 #include <QThread>
 #include <QTimer>
 #include <QToolBar>
@@ -138,6 +140,10 @@
 
 #include <Base/Color.h>
 #include "QtWidgets.h"
+
+#if defined(Q_OS_MACOS)
+# include "ParashellSparkleUpdater.h"
+#endif
 
 FC_LOG_LEVEL_INIT("MainWindow", false, true, true)
 
@@ -1836,7 +1842,7 @@ ParameterGrp::handle parashellUpdatePreferences()
         "User parameter:BaseApp/Preferences/Update");
 }
 
-QString parashellCurrentVersion()
+[[maybe_unused]] QString parashellCurrentVersion()
 {
     const auto& config = App::Application::Config();
     const auto valueOf = [&config](const char* key) -> std::string {
@@ -1852,8 +1858,9 @@ QString parashellCurrentVersion()
     return QString::fromStdString(major + "." + minor + "." + point);
 }
 
-void parashellShowUpdatePrompt(QWidget* parent, const QString& version, const QString& informative,
-                               const std::function<void()>& onAccept)
+[[maybe_unused]] void parashellShowUpdatePrompt(QWidget* parent, const QString& version,
+                                                const QString& informative,
+                                                const std::function<void()>& onAccept)
 {
     ParameterGrp::handle hGrp = parashellUpdatePreferences();
     const QString skipped = QString::fromStdString(hGrp->GetASCII("SkippedVersion", ""));
@@ -2001,7 +2008,22 @@ void parashellCheckForUpdates(QWidget* parent)
     process->start();
 }
 
+#elif defined(Q_OS_MACOS)  // Q_OS_WIN
+
+void parashellCheckForUpdates(QWidget* parent)
+{
+    Q_UNUSED(parent)
+    const bool automaticChecksEnabled =
+        parashellUpdatePreferences()->GetBool("AutoCheckEnabled", true);
+    Gui::parashellSparkleCheckForUpdatesInBackground(automaticChecksEnabled);
+}
+
 #else  // Q_OS_WIN
+
+QString parashellDownloadPage()
+{
+    return QStringLiteral("https://www.parashell.cloud/download");
+}
 
 void parashellCheckForUpdates(QWidget* parent)
 {
@@ -2035,21 +2057,19 @@ void parashellCheckForUpdates(QWidget* parent)
         if (!object.value(QStringLiteral("update_available")).toBool()) {
             return;
         }
-        const QString newVersion = object.value(QStringLiteral("latest"))
-                                       .toObject()
-                                       .value(QStringLiteral("version"))
-                                       .toString();
+        const QJsonObject latest = object.value(QStringLiteral("latest")).toObject();
+        const QString newVersion = latest.value(QStringLiteral("version")).toString();
         static const QRegularExpression versionRe(QStringLiteral("^\\d+\\.\\d+\\.\\d+$"));
         if (!versionRe.match(newVersion).hasMatch()) {
             return;
         }
+
         parashellShowUpdatePrompt(
             parent,
             newVersion,
-            MainWindow::tr("Open the download page to get the latest version of Parashell."),
+            MainWindow::tr("Download the new AppImage to update Parashell."),
             []() {
-                QDesktopServices::openUrl(
-                    QUrl(QStringLiteral("https://www.parashell.cloud/download")));
+                QDesktopServices::openUrl(QUrl(parashellDownloadPage()));
             });
     });
 }

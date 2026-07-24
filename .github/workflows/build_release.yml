@@ -326,6 +326,8 @@ jobs:
               export MACOS_SIGN_RELEASE="${{ steps.macos_get_cert.outputs.has_cert }}"
               export MACOS_SIGNING_KEY_ID="${{ secrets.SIGNING_KEY_ID }}"
               export MACOS_DEPLOYMENT_TARGET="${{ matrix.deploy_target }}"
+              export SPARKLE_PUBLIC_ED_KEY="${{ vars.SPARKLE_PUBLIC_ED_KEY }}"
+              export SPARKLE_ED_PRIVATE_KEY="${{ secrets.SPARKLE_ED_PRIVATE_KEY }}"
               ;;
           esac
 

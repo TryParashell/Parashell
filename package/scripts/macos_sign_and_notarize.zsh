@@ -103,6 +103,11 @@ function run_codesign_extension {
     /usr/bin/codesign --options runtime -f -s ${SIGNING_KEY_ID} --timestamp --entitlements "$entitlements_file" "$target"
 }
 
+function run_codesign_plain {
+    echo "Signing $1 (hardened runtime, no extra entitlements)"
+    /usr/bin/codesign --options runtime -f -s ${SIGNING_KEY_ID} --timestamp "$1"
+}
+
 IFS=$'\n'
 dylibs=($(/usr/bin/find "${CONTAINING_FOLDER}/${APP_NAME}" -name "*.dylib"))
 shared_objects=($(/usr/bin/find "${CONTAINING_FOLDER}/${APP_NAME}" -name "*.so"))
@@ -115,8 +120,9 @@ signed_files=("${dylibs[@]}" "${shared_objects[@]}" "${bundles[@]}" "${executabl
 # This list of files is generated from:
 # file `find . -type f -perm +111 -print` | grep "Mach-O 64-bit executable" | sed 's/:.*//g'
 for exe in ${signed_files}; do
-    # Skip .appex executables as they will be signed separately with their bundles
-    if [[ "$exe" != */Contents/PlugIns/*.appex/* ]]; then
+    # Skip .appex executables (signed separately with their bundles) and the
+    # Sparkle framework contents (signed separately with the hardened runtime)
+    if [[ "$exe" != */Contents/PlugIns/*.appex/* && "$exe" != */Sparkle.framework/* ]]; then
         run_codesign "${exe}"
     fi
 done
@@ -153,6 +159,27 @@ if [ -d "${CONTAINING_FOLDER}/${APP_NAME}/Contents/PlugIns" ]; then
     if [ -d "${CONTAINING_FOLDER}/${APP_NAME}/Contents/PlugIns/FreeCADPreviewExtension.appex" ] && [ -f "$PREVIEW_ENTITLEMENTS" ]; then
         run_codesign_extension "${CONTAINING_FOLDER}/${APP_NAME}/Contents/PlugIns/FreeCADPreviewExtension.appex" "$PREVIEW_ENTITLEMENTS"
     fi
+fi
+
+# Sign the embedded Sparkle framework with the hardened runtime, deepest first.
+# Its XPC services and helper apps must be sealed before the framework, and the
+# framework before the app, so the outer signature covers valid inner ones.
+SPARKLE_FRAMEWORK="${CONTAINING_FOLDER}/${APP_NAME}/Contents/Frameworks/Sparkle.framework"
+if [ -d "${SPARKLE_FRAMEWORK}" ]; then
+    SPARKLE_VERSIONED="${SPARKLE_FRAMEWORK}/Versions/B"
+    if [ -d "${SPARKLE_VERSIONED}/XPCServices/Downloader.xpc" ]; then
+        run_codesign_plain "${SPARKLE_VERSIONED}/XPCServices/Downloader.xpc"
+    fi
+    if [ -d "${SPARKLE_VERSIONED}/XPCServices/Installer.xpc" ]; then
+        run_codesign_plain "${SPARKLE_VERSIONED}/XPCServices/Installer.xpc"
+    fi
+    if [ -e "${SPARKLE_VERSIONED}/Autoupdate" ]; then
+        run_codesign_plain "${SPARKLE_VERSIONED}/Autoupdate"
+    fi
+    if [ -d "${SPARKLE_VERSIONED}/Updater.app" ]; then
+        run_codesign_plain "${SPARKLE_VERSIONED}/Updater.app"
+    fi
+    run_codesign_plain "${SPARKLE_FRAMEWORK}"
 fi
 
 # Finally, sign the app itself (must be done last)

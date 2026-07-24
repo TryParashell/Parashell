@@ -1507,6 +1507,43 @@ endif ()
 target_sources(FreeCADGui PRIVATE ${FreeCADGui_SRCS})
 target_link_libraries(FreeCADGui PUBLIC ${FreeCADGui_LIBS})
 
+if(APPLE)
+    set(SPARKLE_VERSION "2.9.4")
+    set(SPARKLE_SHA256 "ce89daf967db1e1893ed3ebd67575ed82d3902563e3191ca92aaec9164fbdef9")
+    set(SPARKLE_DOWNLOAD_DIR "${CMAKE_BINARY_DIR}/sparkle")
+    set(SPARKLE_FRAMEWORK_DIR "${SPARKLE_DOWNLOAD_DIR}/Sparkle.framework")
+
+    if(NOT EXISTS "${SPARKLE_FRAMEWORK_DIR}")
+        set(SPARKLE_ARCHIVE "${CMAKE_BINARY_DIR}/Sparkle-${SPARKLE_VERSION}.tar.xz")
+        file(DOWNLOAD
+            "https://github.com/sparkle-project/Sparkle/releases/download/${SPARKLE_VERSION}/Sparkle-${SPARKLE_VERSION}.tar.xz"
+            "${SPARKLE_ARCHIVE}"
+            EXPECTED_HASH SHA256=${SPARKLE_SHA256}
+            SHOW_PROGRESS
+        )
+        file(MAKE_DIRECTORY "${SPARKLE_DOWNLOAD_DIR}")
+        execute_process(
+            COMMAND ${CMAKE_COMMAND} -E tar xJf "${SPARKLE_ARCHIVE}"
+            WORKING_DIRECTORY "${SPARKLE_DOWNLOAD_DIR}"
+            RESULT_VARIABLE SPARKLE_EXTRACT_RESULT
+        )
+        if(NOT SPARKLE_EXTRACT_RESULT EQUAL 0)
+            message(FATAL_ERROR "Failed to extract the Sparkle framework archive")
+        endif()
+    endif()
+
+    if(NOT EXISTS "${SPARKLE_FRAMEWORK_DIR}")
+        message(FATAL_ERROR "Sparkle.framework was not found after extraction at ${SPARKLE_FRAMEWORK_DIR}")
+    endif()
+
+    target_sources(FreeCADGui PRIVATE ParashellSparkleUpdater.mm)
+    set_source_files_properties(ParashellSparkleUpdater.mm PROPERTIES
+        COMPILE_FLAGS "-fobjc-arc -F${SPARKLE_DOWNLOAD_DIR}")
+    target_link_options(FreeCADGui PRIVATE "-F${SPARKLE_DOWNLOAD_DIR}")
+    target_link_libraries(FreeCADGui PRIVATE "-framework Sparkle" "-framework AppKit" "-framework Foundation")
+    set_property(TARGET FreeCADGui APPEND PROPERTY INSTALL_RPATH "@loader_path/../../Frameworks")
+endif()
+
 if(FREECAD_QT_MAJOR_VERSION EQUAL 6 AND QtWebEngineQuick_FOUND)
     target_compile_definitions(FreeCADGui PRIVATE FREECAD_HAVE_QTWEBENGINE)
 endif()
