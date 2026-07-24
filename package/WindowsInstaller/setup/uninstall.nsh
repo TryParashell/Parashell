@@ -52,6 +52,9 @@ Section "un.${APP_NAME}" un.SecUnProgramFiles
   SetOutPath "$TEMP"
   RMDir /r "$INSTDIR"
   
+  StrCpy $AppSubfolder "PARA"
+  Call un.DelAppPathSub
+  
   # Registry keys and values
   DeleteRegKey SHCTX "${APP_REGKEY_SETUP}"
   DeleteRegKey SHCTX "${APP_REGKEY}"

@@ -33,6 +33,9 @@ cp ${conda_env}/share/applications/app.parashell.Parashell.desktop AppDir/
 sed -i 's/Exec=Parashell/Exec=AppRun/g' AppDir/app.parashell.Parashell.desktop
 cp ${conda_env}/share/icons/hicolor/scalable/apps/app.parashell.Parashell.svg AppDir/app.parashell.Parashell.svg
 
+cp uninstall.sh AppDir/uninstall.sh
+chmod +x AppDir/uninstall.sh
+
 # Remove __pycache__ folders and .pyc files
 find . -path "*/__pycache__/*" -delete
 find . -name "*.pyc" -type f -delete

@@ -30,6 +30,7 @@ sed -i '1s|.*|#!/usr/bin/env python|' ${conda_env}/bin/pip
 
 # copy resources
 cp resources/* ${conda_env}
+chmod +x ${conda_env}/uninstall.command
 
 # Remove __pycache__ folders and .pyc files
 find . -path "*/__pycache__/*" -delete
