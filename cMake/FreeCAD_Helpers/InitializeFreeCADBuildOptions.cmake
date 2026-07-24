@@ -22,7 +22,7 @@ macro(InitializeFreeCADBuildOptions)
     option(BUILD_WITH_CONDA "Set ON if you build FreeCAD with conda" OFF)
     option(BUILD_DYNAMIC_LINK_PYTHON "If OFF extension-modules do not link against python-libraries" ON)
     option(PARASHELL_STATIC_COMPILER_RUNTIME
-           "Statically link the GNU compiler runtime into CMake-produced binaries (not plugins or CPython extensions)"
+           "Statically link the GNU compiler runtime into CMake executables (not plugins or CPython extensions)"
            OFF)
     option(BUILD_TRACY_FRAME_PROFILER "If ON then enables support for the Tracy frame profiler" OFF)
 

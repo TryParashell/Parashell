@@ -52,16 +52,16 @@ macro(CompilerChecksAndSetups)
     # Log the compiler and version
     message(STATUS "Compiler: ${CMAKE_CXX_COMPILER_ID}, version: ${CMAKE_CXX_COMPILER_VERSION}")
 
-    # Keep the compiler runtime self-contained on GNU toolchains.  Do not use
-    # -static here: FreeCAD workbenches and the bundled Parashell agent,
-    # bridge, and auth artifacts are runtime-loaded shared libraries/CPython
-    # extensions and must remain dynamically loadable.  The option only
-    # removes the libgcc/libstdc++ runtime dependency from targets produced by
-    # this CMake project; it deliberately does not alter those artifacts.
+    # Keep the compiler runtime self-contained in executable targets on GNU
+    # toolchains. Do not use -static here, or apply these flags to all target
+    # types: FreeCAD workbenches and the bundled Parashell agent, bridge, and
+    # auth artifacts are runtime-loaded shared libraries/CPython extensions
+    # and must remain dynamically loadable.
     if(PARASHELL_STATIC_COMPILER_RUNTIME)
         if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-            add_link_options(-static-libgcc -static-libstdc++)
-            message(STATUS "Parashell: statically linking the GNU compiler runtime")
+            set(CMAKE_EXE_LINKER_FLAGS
+                "${CMAKE_EXE_LINKER_FLAGS} -static-libgcc -static-libstdc++")
+            message(STATUS "Parashell: statically linking the GNU compiler runtime in executables")
         else()
             message(STATUS
                 "Parashell: static compiler runtime is unavailable for ${CMAKE_CXX_COMPILER_ID}; "
