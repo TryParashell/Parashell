@@ -46,13 +46,23 @@ runs:
       shell: bash -l {0}
       env:
         LOG_FILE: ${{ inputs.logFile }}
+        # Test output is piped (through sed into tee) rather than attached to a TTY, so
+        # the embedded Python interpreter switches to block buffering. When a test then
+        # hangs and the step is killed by its timeout-minutes, the buffered tail is lost.
+        # That is exactly what happened to the Coin node snapshot step: it timed out
+        # after 15 minutes and uploaded a 0-byte log, giving no indication of which test
+        # stalled. Keep the pipeline unbuffered so a killed step still shows how far it
+        # got. Note the test command is intentionally left un-rewrapped here: it is
+        # arbitrary shell supplied by the caller, so re-quoting it through `bash -c`
+        # would corrupt commands containing quotes.
+        PYTHONUNBUFFERED: "1"
       run: |
         set -o pipefail
         LOG_FILE="${LOG_FILE//\\//}"
         mkdir -p "$(dirname "$LOG_FILE")"
         {
           ${{ inputs.testCommand }}
-        } 2>&1 | sed -Ee "/[[:blank:]]*\\([[:digit:]]{1,3} %\\)[[:blank:]]*/d" | tee -a "$LOG_FILE"
+        } 2>&1 | sed -Eue "/[[:blank:]]*\\([[:digit:]]{1,3} %\\)[[:blank:]]*/d" | tee -a "$LOG_FILE"
     - name: Write report
       shell: bash -l {0}
       if: always()
