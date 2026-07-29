@@ -39,9 +39,6 @@ ${LangFileString} SecDesktopDescription "Parashell-ikon elhelyezése az Asztalon
 #${LangFileString} RunConfigureFailed "Nem tudom végrehajtani a configure parancsfájlt!"
 ${LangFileString} InstallRunning "A telepítő már fut!"
 ${LangFileString} AlreadyInstalled "A Parashell ${APP_SERIES_KEY2} már teleptve van!$\r$\n\
-				Installing over existing installations is not recommended if the installed version$\r$\n\
-				is a test release or if you have problems with your existing Parashell installation.$\r$\n\
-				In these cases better reinstall Parashell.$\r$\n\
 				Dou you nevertheles want to install Parashell over the existing version?"
 ${LangFileString} NewerInstalled "A jelenleg telepítettnél régebbi Parashell verziót próbál telepíteni.$\r$\n\
 				  Ha valóban ezt akarja, először el kell távolítania a meglévő Parashell $OldVersionNumber változatot."
@@ -68,3 +65,8 @@ ${LangFileString} DialogUnPreferences 'You chose to delete the Parashells user c
 						This will also delete all installed Parashell addons.$\r$\n\
 						Do you agree with this?'
 ${LangFileString} SecUnProgramFilesDescription "A Parashell és minden komponensének eltávolítása."
+
+${LangFileString} DirNotEmptyWarning "The selected folder '$INSTDIR' is not empty.$\r$\n\
+                        The installer will remove all its content before installing. Continue?"
+${LangFileString} RMInstDirFailed "Failed to remove '$INSTDIR'.$\r$\n\
+                        Make sure you have sufficient permissions and that no files are in use."

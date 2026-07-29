@@ -39,9 +39,6 @@ ${LangFileString} SecDesktopDescription "رمز ليم على سطح المكت�
 #${LangFileString} RunConfigureFailed "لم ينفذ سكريبت الضبط"
 ${LangFileString} InstallRunning "المركب يعمل حاليا!"
 ${LangFileString} AlreadyInstalled "ليك ${APP_SERIES_KEY2} تم تركيبه بالفعل!$\r$\n\
-				التركيب على النسخة الحالية غير مفضل إذا كانت النسخة الحالية$\r$\n\
-				تجريبية أو بها مشاكل.$\r$\n\
-				في هذه الحالة من الأفضل إعادة التركيب.$\r$\n\
 				هل تريد بالرغم من ذلك تركيب ليك على النسخة الحالية؟"
 ${LangFileString} NewerInstalled "تحاول تركيب نسخة ليك أقدم من الموجودة حاليا.$\r$\n\
 				  إذا كنت تريدها بالتأكيد, عليك حذف النسخة الحالية $OldVersionNumber أولا."
@@ -68,3 +65,8 @@ ${LangFileString} DialogUnPreferences 'You chose to delete the Parashells user c
 						This will also delete all installed Parashell addons.$\r$\n\
 						Do you agree with this?'
 ${LangFileString} SecUnProgramFilesDescription "إزالة ليك مع كل مكوناته."
+
+${LangFileString} DirNotEmptyWarning "The selected folder '$INSTDIR' is not empty.$\r$\n\
+                        The installer will remove all its content before installing. Continue?"
+${LangFileString} RMInstDirFailed "Failed to remove '$INSTDIR'.$\r$\n\
+                        Make sure you have sufficient permissions and that no files are in use."

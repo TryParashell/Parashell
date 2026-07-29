@@ -39,9 +39,6 @@ ${LangFileString} SecDesktopDescription "Una icona del Parashell a l'escriptori.
 #${LangFileString} RunConfigureFailed "No es pot executar el programa de configuració"
 ${LangFileString} InstallRunning "L'instal·lador ja s'està executant!"
 ${LangFileString} AlreadyInstalled "El Parashell ${APP_SERIES_KEY2} ja es troba instal·lat!$\r$\n\
-				Installing over existing installations is not recommended if the installed version$\r$\n\
-				is a test release or if you have problems with your existing Parashell installation.$\r$\n\
-				In these cases better reinstall Parashell.$\r$\n\
 				Dou you nevertheles want to install Parashell over the existing version?"
 ${LangFileString} NewerInstalled "You are trying to install an older version of Parashell than what you have installed.$\r$\n\
 				  If you really want this, you must uninstall the existing Parashell $OldVersionNumber before."
@@ -68,3 +65,8 @@ ${LangFileString} DialogUnPreferences 'You chose to delete the Parashells user c
 						This will also delete all installed Parashell addons.$\r$\n\
 						Do you agree with this?'
 ${LangFileString} SecUnProgramFilesDescription "Desinstal·la el Parashell i tots els seus components."
+
+${LangFileString} DirNotEmptyWarning "The selected folder '$INSTDIR' is not empty.$\r$\n\
+                        The installer will remove all its content before installing. Continue?"
+${LangFileString} RMInstDirFailed "Failed to remove '$INSTDIR'.$\r$\n\
+                        Make sure you have sufficient permissions and that no files are in use."

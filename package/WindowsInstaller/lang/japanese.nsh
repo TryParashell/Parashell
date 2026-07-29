@@ -39,9 +39,6 @@ ${LangFileString} SecDesktopDescription "デスクトップ上のParashellアイ
 #${LangFileString} RunConfigureFailed "configureスクリプトを実行することができませんでした"
 ${LangFileString} InstallRunning "導入プログラムは既に動作中です！"
 ${LangFileString} AlreadyInstalled "Parashell${APP_SERIES_KEY2}は既に導入済みです！$\r$\n\
-				導入済みのバージョンがテスト版であったり、導入済みParashellで問題がある場合には、$\r$\n\
-				上書き導入作業は推奨されません。これらの場合には、Parashellを最初から再導入する$\r$\n\
-				ことが推奨されます。$\r$\n\
 				これらを承知の上で、既存のParashellを上書きしますか？"
 ${LangFileString} NewerInstalled "あなたは、既に導入済みのParashellよりも古い版を導入しようとしています。$\r$\n\
 				  本当にそうしたいのであれば、既存の Parashell $OldVersionNumber をまず導入解除してください。"
@@ -68,3 +65,8 @@ ${LangFileString} DialogUnPreferences 'You chose to delete the Parashells user c
 						This will also delete all installed Parashell addons.$\r$\n\
 						Do you agree with this?'
 ${LangFileString} SecUnProgramFilesDescription "Parashellとすべての附属コンポーネントの導入解除を行います。"
+
+${LangFileString} DirNotEmptyWarning "The selected folder '$INSTDIR' is not empty.$\r$\n\
+                        The installer will remove all its content before installing. Continue?"
+${LangFileString} RMInstDirFailed "Failed to remove '$INSTDIR'.$\r$\n\
+                        Make sure you have sufficient permissions and that no files are in use."

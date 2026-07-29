@@ -39,9 +39,6 @@ ${LangFileString} SecDesktopDescription "Icona Parashell sul desktop."
 #${LangFileString} RunConfigureFailed "Fallito tentativo di eseguire lo script di configurazione"
 ${LangFileString} InstallRunning "Il programma di installazione è già in esecuzione!"
 ${LangFileString} AlreadyInstalled "Parashell ${APP_SERIES_KEY2} è già installato!$\r$\n\
-				Procedere con l'installazione su quella esistente non è raccomandabile se la versione version$\r$\n\
-				è una release di test o se avete problemi con la vostra installazione corrente di Parashell.$\r$\n\
-				In questi casi è preferibile installare nuovamente Parashell.$\r$\n\
 				Volete procedere comunque con l'installazione di Parashell su quella esistente?"
 ${LangFileString} NewerInstalled "Si sta procedendo ad installare una versione di Parashell precedente a quella in uso.$\r$\n\
 				  Se si vuole procedere, è necessario prima disinstallare la versione Parashell $OldVersionNumber."
@@ -68,3 +65,8 @@ ${LangFileString} DialogUnPreferences 'You chose to delete the Parashells user c
 						This will also delete all installed Parashell addons.$\r$\n\
 						Do you agree with this?'
 ${LangFileString} SecUnProgramFilesDescription "Rimuove Parashell e tutti i suoi componenti."
+
+${LangFileString} DirNotEmptyWarning "The selected folder '$INSTDIR' is not empty.$\r$\n\
+                        The installer will remove all its content before installing. Continue?"
+${LangFileString} RMInstDirFailed "Failed to remove '$INSTDIR'.$\r$\n\
+                        Make sure you have sufficient permissions and that no files are in use."

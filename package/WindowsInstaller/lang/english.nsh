@@ -39,9 +39,6 @@ ${LangFileString} SecDesktopDescription "A Parashell icon on the desktop."
 #${LangFileString} RunConfigureFailed "Could not run configure script."
 ${LangFileString} InstallRunning "The installer is already running!"
 ${LangFileString} AlreadyInstalled "Parashell ${APP_SERIES_KEY2} is already installed!$\r$\n\
-				Installing over existing installations is not recommended if the installed version$\r$\n\
-				is a test release or if you have problems with your existing Parashell installation.$\r$\n\
-				In these cases better reinstall Parashell.$\r$\n\
 				Do you nevertheless want to install Parashell over the existing version?"
 ${LangFileString} NewerInstalled "You are trying to install an older version of Parashell than what you have installed.$\r$\n\
 				  If you really want this, you must uninstall the existing Parashell $OldVersionNumber before."
@@ -80,3 +77,8 @@ ${LangFileString} DialogUnPreferences 'You chose to delete the Parashell user co
 						preferences for all versions of Parashell.$\r$\n\
 						Are you sure you want to proceed?'
 ${LangFileString} SecUnProgramFilesDescription "Uninstall Parashell and all of its components."
+
+${LangFileString} DirNotEmptyWarning "The selected folder '$INSTDIR' is not empty.$\r$\n\
+                        The installer will remove all its content before installing. Continue?"
+${LangFileString} RMInstDirFailed "Failed to remove '$INSTDIR'.$\r$\n\
+                        Make sure you have sufficient permissions and that no files are in use."

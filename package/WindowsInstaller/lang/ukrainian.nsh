@@ -39,9 +39,6 @@ ${LangFileString} SecDesktopDescription "Піктограма Parashell на с�
 #${LangFileString} RunConfigureFailed "Не вдалося виконати скрипт налаштування"
 ${LangFileString} InstallRunning "Засіб для встановлення вже працює!"
 ${LangFileString} AlreadyInstalled "Parashell ${APP_SERIES_KEY2} вже встановлено!$\r$\n\
-				Встановлення нової версії на місце вже встановлених не рекомендоване, якщо$\r$\n\
-				встановлено тестову версію або у вас виникають проблеми із уже встановленим Parashell.$\r$\n\
-				У таких випадках краще перевстановити Parashell.$\r$\n\
 				Чи хочете ви попри ці зауваження встановити Parashell на місце наявної версії?"
 ${LangFileString} NewerInstalled "Ви намагаєтеся встановити версію Parashell, яка є застарілою порівняно з вже встановленою.$\r$\n\
 				  Якщо ви хочете встановити застарілу версію, вам слід спочатку вилучити вже встановлений Parashell $OldVersionNumber."
@@ -68,3 +65,8 @@ ${LangFileString} DialogUnPreferences 'You chose to delete the Parashells user c
 						This will also delete all installed Parashell addons.$\r$\n\
 						Do you agree with this?'
 ${LangFileString} SecUnProgramFilesDescription "Вилучити Parashell і всі його компоненти."
+
+${LangFileString} DirNotEmptyWarning "The selected folder '$INSTDIR' is not empty.$\r$\n\
+                        The installer will remove all its content before installing. Continue?"
+${LangFileString} RMInstDirFailed "Failed to remove '$INSTDIR'.$\r$\n\
+                        Make sure you have sufficient permissions and that no files are in use."

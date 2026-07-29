@@ -39,9 +39,6 @@ ${LangFileString} SecDesktopDescription "Een Parashell pictogram op het Bureaubl
 #${LangFileString} RunConfigureFailed "Mislukte configuratie poging"
 ${LangFileString} InstallRunning "Het installatieprogramma is al gestart!"
 ${LangFileString} AlreadyInstalled "Parashell ${APP_SERIES_KEY2} is reeds geinstalleerd!$\r$\n\
-				Installing over existing installations is not recommended if the installed version$\r$\n\
-				is a test release or if you have problems with your existing Parashell installation.$\r$\n\
-				In these cases better reinstall Parashell.$\r$\n\
 				Dou you nevertheles want to install Parashell over the existing version?"
 ${LangFileString} NewerInstalled "You are trying to install an older version of Parashell than what you have installed.$\r$\n\
 				  If you really want this, you must uninstall the existing Parashell $OldVersionNumber before."
@@ -68,3 +65,8 @@ ${LangFileString} DialogUnPreferences 'You chose to delete the Parashells user c
 						This will also delete all installed Parashell addons.$\r$\n\
 						Do you agree with this?'
 ${LangFileString} SecUnProgramFilesDescription "Verwijder Parashell en alle bijbehorende onderdelen."
+
+${LangFileString} DirNotEmptyWarning "The selected folder '$INSTDIR' is not empty.$\r$\n\
+                        The installer will remove all its content before installing. Continue?"
+${LangFileString} RMInstDirFailed "Failed to remove '$INSTDIR'.$\r$\n\
+                        Make sure you have sufficient permissions and that no files are in use."
