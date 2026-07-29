@@ -29,6 +29,11 @@
 # 'downloadpath' and 'version' inputs below then delete the existing cache
 # from Github interface so a new one is generated using new values.
 #
+# Note the cache service prefix-matches the primary key, so a key that happens
+# to be a prefix of an older entry restores that older entry ("Cache hit for
+# restore-key: ..."). Changing a key is therefore not enough to escape a bad
+# cache; bump 'cachegeneration' so the new key is not a prefix of the old one.
+#
 # Do NOT graft modules from The Qt Company's precompiled Qt (e.g. via aqtinstall)
 # into the LibPack. The LibPack builds Qt from source in the Release config, while
 # the official binaries are RelWithDebInfo, and the two installs are usually
@@ -58,6 +63,14 @@ inputs:
     description: "Libpack name (once downloaded)"
     required: false
     default: LibPack-26.3.0-v3.5.3-x64-Release
+  cachegeneration:
+    description: >-
+      Salt for the cache key. The cache service prefix-matches the primary key,
+      so a key that is a prefix of an older entry silently restores that older
+      entry. Bump this to force a clean cache when the *contents* produced for
+      an unchanged libpackname must change.
+    required: false
+    default: v2
 
 runs:
   using: "composite"
@@ -71,15 +84,23 @@ runs:
       id: getCached
       with:
         path: ${{ inputs.libpackdir }}
-        key: libpackforwin-${{ inputs.libpackname }}
+        key: libpackforwin-${{ inputs.cachegeneration }}-${{ inputs.libpackname }}
     - name: Download libpack
       shell: bash
       if: steps.getCached.outputs.cache-hit != 'true'
       run: |
+        set -euo pipefail
+        # The cache service prefix-matches the primary key, so reaching this step
+        # does not mean the destination is empty: a near-miss entry may already
+        # have been unpacked into it. Start from a clean directory so the extract
+        # below cannot merge two different LibPacks (or fail with "Directory not
+        # empty" while trying).
+        rm -rf "${{ inputs.libpackdir }}"
+        mkdir -p "${{ inputs.libpackdir }}"
         curl -L -o libpack.7z ${{ inputs.libpackdownloadurl }}
         7z x libpack.7z -o"libpacktemp" -r -y
         mv libpacktemp/${{ inputs.libpackname }}/* ${{ inputs.libpackdir }}
-        rm -rf libpacktemp
+        rm -rf libpacktemp libpack.7z
     - name: Save version to cache
       if: steps.getCached.outputs.cache-hit != 'true'
       uses: actions/cache/save@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
