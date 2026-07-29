@@ -28,6 +28,18 @@
 # If it needs to be updated to another version, the process it to change
 # 'downloadpath' and 'version' inputs below then delete the existing cache
 # from Github interface so a new one is generated using new values.
+#
+# Do NOT graft modules from The Qt Company's precompiled Qt (e.g. via aqtinstall)
+# into the LibPack. The LibPack builds Qt from source in the Release config, while
+# the official binaries are RelWithDebInfo, and the two installs are usually
+# different Qt versions. Qt's generated <Package>Targets.cmake globs its sibling
+# <Package>Targets-<config>.cmake files, so a foreign per-config file dropped into
+# lib/cmake breaks configuration: grafting Qt 6.8.3 over the 6.11.1 LibPack added
+# Qt6LinguistToolsTargets-relwithdebinfo.cmake, which references Qt6::lprodump, a
+# tool Qt removed in 6.11, producing "could not find TARGET Qt6::lprodump". The
+# grafted WebEngineQuick was not even usable, because Qt6Config requires an EXACT
+# version match for its components. In-application WebEngine views stay disabled
+# on Windows until the LibPack itself ships qtwebengine.
 
 name: getLibpack
 description: "Windows: tries to get a cached version of Libpack and create one if fails"
@@ -46,14 +58,6 @@ inputs:
     description: "Libpack name (once downloaded)"
     required: false
     default: LibPack-26.3.0-v3.5.3-x64-Release
-  qtversion:
-    description: "Qt version to source the WebEngine module from (must match the LibPack Qt)"
-    required: false
-    default: 6.8.3
-  qtarch:
-    description: "aqtinstall architecture identifier for the WebEngine module"
-    required: false
-    default: win64_msvc2022_64
 
 runs:
   using: "composite"
@@ -67,7 +71,7 @@ runs:
       id: getCached
       with:
         path: ${{ inputs.libpackdir }}
-        key: libpackforwin-${{ inputs.libpackname }}-qtwebengine-${{ inputs.qtversion }}
+        key: libpackforwin-${{ inputs.libpackname }}
     - name: Download libpack
       shell: bash
       if: steps.getCached.outputs.cache-hit != 'true'
@@ -76,24 +80,6 @@ runs:
         7z x libpack.7z -o"libpacktemp" -r -y
         mv libpacktemp/${{ inputs.libpackname }}/* ${{ inputs.libpackdir }}
         rm -rf libpacktemp
-    - name: Provision Qt WebEngine into Libpack
-      shell: bash
-      if: steps.getCached.outputs.cache-hit != 'true'
-      run: |
-        set -euo pipefail
-        python -m pip install --upgrade pip
-        python -m pip install "aqtinstall==3.1.*"
-        python -m aqt install-qt windows desktop ${{ inputs.qtversion }} ${{ inputs.qtarch }} \
-          --modules qtwebengine qtpositioning \
-          --outputdir qtwebengine_tmp
-        qtprefix="qtwebengine_tmp/${{ inputs.qtversion }}/msvc2022_64"
-        if [ ! -d "$qtprefix/lib/cmake/Qt6WebEngineQuick" ]; then
-          echo "Qt6WebEngineQuick not present in aqt install at $qtprefix" >&2
-          exit 1
-        fi
-        cp -rn "$qtprefix/." "${{ inputs.libpackdir }}/"
-        test -f "${{ inputs.libpackdir }}/lib/cmake/Qt6WebEngineQuick/Qt6WebEngineQuickConfig.cmake"
-        rm -rf qtwebengine_tmp
     - name: Save version to cache
       if: steps.getCached.outputs.cache-hit != 'true'
       uses: actions/cache/save@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
