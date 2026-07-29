@@ -345,6 +345,18 @@ generate_from_py(AxisOrigin)
 generate_from_py(Command)
 generate_from_py(EditableDatumLabel)
 generate_from_py(Navigation/NavigationStyle)
+generate_module_from_py(
+    FreeCADGui
+    FreeCADGui_MODULE_GENERATED_SRCS
+)
+generate_module_from_py(
+    FreeCADGui.Selection
+    Selection_MODULE_GENERATED_SRCS
+)
+generate_module_from_py(
+    FreeCADGui.PySideUic
+    PySideUic_MODULE_GENERATED_SRCS
+)
 
 generate_embed_from_py(FreeCADGuiInit GuiInitScript.h)
 generate_embed_from_py(FreeCADGuiTest GuiTestScript.h)
@@ -357,6 +369,8 @@ SET(FreeCADGui_Pyi_SRCS
     ViewProviderExtension.pyi
     PythonWorkbench.pyi
     Workbench.pyi
+    FreeCADGui.module.pyi
+    FreeCADGui.Selection.module.pyi
     Selection/SelectionObject.pyi
     Document.pyi
     LinkView.pyi
@@ -890,6 +904,7 @@ SET(View3D_CPP_SRCS
     Flag.cpp
     GLBuffer.cpp
     GLPainter.cpp
+    RubberbandOverlay.cpp
     Multisample.cpp
     MouseSelection.cpp
     SplitView3DInventor.cpp
@@ -909,6 +924,7 @@ SET(View3D_SRCS
     Camera.h
     Flag.h
     GLBuffer.h
+    RubberbandOverlay.h
     GLPainter.h
     Multisample.h
     MouseSelection.h
@@ -1297,6 +1313,7 @@ SOURCE_GROUP("Workbench" FILES ${Workbench_SRCS})
 SET(Selection_SRCS
     Selection/BoxSelection.cpp
     Selection/BoxSelection.h
+    ${Selection_MODULE_GENERATED_SRCS}
     Selection/SelectionObjectPyImp.cpp
     Selection/SelectionObject.h
     Selection/SelectionObject.cpp
@@ -1315,6 +1332,8 @@ SOURCE_GROUP("Selection" FILES ${Selection_SRCS})
 
 # The FreeCADGui sources
 SET(FreeCADGui_CPP_SRCS
+    ${FreeCADGui_MODULE_GENERATED_SRCS}
+    ${PySideUic_MODULE_GENERATED_SRCS}
     Application.cpp
     ApplicationPy.cpp
     AutoSaver.cpp
