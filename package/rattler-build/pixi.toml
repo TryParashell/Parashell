@@ -8,7 +8,7 @@ preview = ["pixi-build"]
 
 [package]
 name = "parashell"
-version = "1.0.0dev"
+version = "1.0.0"
 homepage = "https://www.parashell.cloud"
 repository = "https://www.parashell.cloud/open-source"
 description = "Parashell"
