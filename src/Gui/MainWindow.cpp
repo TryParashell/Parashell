@@ -2083,6 +2083,11 @@ void MainWindow::showEvent(QShowEvent* e)
     std::clog << "Show main window" << std::endl;
     QMainWindow::showEvent(e);
 
+    // Automated GUI tests must not schedule interactive startup dialogs or network checks.
+    if (Gui::isInternalGuiTestRun()) {
+        return;
+    }
+
     static bool consentPromptScheduled = false;
     if (!consentPromptScheduled && !App::SentryReporting::instance().hasAskedForConsent()) {
         consentPromptScheduled = true;

@@ -2633,13 +2633,8 @@ void Application::runApplication()
     }
 
 #ifdef FREECAD_HAVE_QTWEBENGINE
-    // Some headless OpenGL jobs do not use WebEngine and need to keep Qt Quick from
-    // changing the process-wide graphics setup before QApplication is constructed.
-    // WebEngine remains enabled by default for normal application launches.
-    if (!qEnvironmentVariableIsSet("FREECAD_DISABLE_QTWEBENGINE")) {
-        QQuickWindow::setGraphicsApi(QSGRendererInterface::OpenGL);
-        QtWebEngineQuick::initialize();
-    }
+    QQuickWindow::setGraphicsApi(QSGRendererInterface::OpenGL);
+    QtWebEngineQuick::initialize();
 #endif
 
     // A new QApplication
