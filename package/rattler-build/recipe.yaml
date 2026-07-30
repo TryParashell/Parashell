@@ -186,6 +186,7 @@ requirements:
     - scipy
     - sentry-sdk
     - sympy
+    - tiktoken>=0.13,<0.14
     - typing_extensions
     - validators>=0.35,<1.0
     - vtk
