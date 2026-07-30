@@ -46,13 +46,46 @@ runs:
       shell: bash -l {0}
       env:
         LOG_FILE: ${{ inputs.logFile }}
+        # Test output is piped (through sed into tee) rather than attached to a TTY, so
+        # both the embedded Python interpreter and the C/C++ stdio layer switch to block
+        # buffering. When a test then hangs and the step is killed by its
+        # timeout-minutes, the buffered tail is discarded. That is why the Coin node
+        # snapshot step timed out after 15 minutes and uploaded a 0-byte log, giving no
+        # indication of how far it got.
+        #
+        # PYTHONUNBUFFERED alone is not enough: FreeCAD's own banner and unittest
+        # progress are written by native code, which stayed block-buffered and was still
+        # being lost. Line buffering for native stdio is therefore enabled below via
+        # libstdbuf, the same mechanism stdbuf(1) uses, set through the environment.
+        # Doing it with env vars rather than prefixing `stdbuf` to the command matters:
+        # testCommand is arbitrary caller-supplied shell (it may start with its own
+        # VAR=value assignments, and re-quoting it through `bash -c` would corrupt
+        # commands containing quotes), so it must be run exactly as written.
+        PYTHONUNBUFFERED: "1"
       run: |
         set -o pipefail
         LOG_FILE="${LOG_FILE//\\//}"
         mkdir -p "$(dirname "$LOG_FILE")"
+
+        # Enable line-buffered native stdout/stderr when libstdbuf is available.
+        # A missing library is not fatal: ld.so ignores an unusable LD_PRELOAD entry,
+        # but skipping it keeps that warning out of every test log.
+        for candidate in \
+          /usr/libexec/coreutils/libstdbuf.so \
+          /usr/lib/coreutils/libstdbuf.so \
+          /usr/lib/x86_64-linux-gnu/coreutils/libstdbuf.so \
+          /usr/lib64/coreutils/libstdbuf.so
+        do
+          if [ -f "$candidate" ]; then
+            export _STDBUF_O=L _STDBUF_E=L
+            export LD_PRELOAD="$candidate${LD_PRELOAD:+:$LD_PRELOAD}"
+            break
+          fi
+        done
+
         {
           ${{ inputs.testCommand }}
-        } 2>&1 | sed -Ee "/[[:blank:]]*\\([[:digit:]]{1,3} %\\)[[:blank:]]*/d" | tee -a "$LOG_FILE"
+        } 2>&1 | sed -Eue "/[[:blank:]]*\\([[:digit:]]{1,3} %\\)[[:blank:]]*/d" | tee -a "$LOG_FILE"
     - name: Write report
       shell: bash -l {0}
       if: always()
