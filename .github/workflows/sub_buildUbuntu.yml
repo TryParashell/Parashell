@@ -192,6 +192,7 @@ jobs:
         with:
           testDescription: "Coin node snapshot visual tests on build dir"
           testCommand: |
+            FREECAD_DISABLE_QTWEBENGINE=1 \
             FC_VISUAL_OUT_DIR="/tmp/FreeCADTesting/CoinNodeSnapshots" \
             xvfb-run -a -s "-screen 0 1024x768x24" \
               "${{ env.builddir }}/bin/FreeCAD" -t TestCoinNodeSnapshots

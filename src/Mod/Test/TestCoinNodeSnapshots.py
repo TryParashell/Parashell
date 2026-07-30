@@ -2213,6 +2213,8 @@ class CoinNodeSnapshotTestCase(unittest.TestCase):
         with _ViewerSnapshotHarness(width, height) as harness:
             for type_name in node_types:
                 with self.subTest(node=type_name):
+                    snapshot_started = time.monotonic()
+                    print(f"[Coin snapshot] START {type_name}", flush=True)
                     scene = _make_snapshot_scene(type_name)
                     actual_dir = out_dir / "actual"
                     expected_dir = out_dir / "expected"
@@ -2226,6 +2228,11 @@ class CoinNodeSnapshotTestCase(unittest.TestCase):
                         width,
                         height,
                         framing_policy=scene.framing_policy,
+                    )
+                    print(
+                        f"[Coin snapshot] CAPTURED {type_name} "
+                        f"({time.monotonic() - snapshot_started:.2f}s)",
+                        flush=True,
                     )
                     self.assertTrue(actual_path.exists(), f"missing snapshot: {actual_path}")
                     self.assertGreater(
@@ -2280,4 +2287,9 @@ class CoinNodeSnapshotTestCase(unittest.TestCase):
                             print(f"SMOKE mismatch for {type_name}: {msg}")
                     else:
                         self.assertTrue(ok, msg)
+                    print(
+                        f"[Coin snapshot] COMPLETE {type_name} "
+                        f"({time.monotonic() - snapshot_started:.2f}s)",
+                        flush=True,
+                    )
         self.assertTrue(did_render, "No snapshots were rendered")
