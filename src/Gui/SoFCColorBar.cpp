@@ -681,6 +681,16 @@ float SoFCColorBar::getBounds(
         maximumY = baseY / ratio;
     }
 
+    // Measure from the unshifted layout.  The final gradient layout moves the
+    // bar left by the measured label width, so measuring that already-shifted
+    // layout again makes the result depend on whichever viewport rendered the
+    // node first.  In particular, switching from the on-screen viewport to an
+    // off-screen render could move the complete color bar by a few pixels.
+    if (colorScale->mode() == ColorScaleMode::Gradient) {
+        presentation->setViewport(ColorScaleMode::Gradient, minimumX, minimumY, maximumX, maximumY, 0.0F);
+        boxWidth = -1.0F;
+    }
+
     return getBoundingWidth(size);
 }
 
