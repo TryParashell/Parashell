@@ -176,7 +176,6 @@ qt6-webengine = ">=6.11,<6.12"
 
 [pypi-dependencies]
 freecad-stubs = "*"
-semgrep = "==1.172.0"
 
 ## Qt 6 Configuration Presets
 [target.linux-64.tasks]

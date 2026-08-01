@@ -294,6 +294,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-64/readline-8.3-h853b02a_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/regex-2026.7.19-py311h49ec1c0_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/rhash-1.4.6-hb9d3cd8_1.conda
+      - conda: https://conda.anaconda.org/conda-forge/linux-64/ripgrep-15.2.0-hdab8a38_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/rocksdb-10.6.2-h13d676d_0_default.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/rpds-py-2026.6.3-py311h1baac5b_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/ruamel.yaml-0.17.40-py311h459d7ec_0.conda
@@ -788,6 +789,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/readline-8.3-hb682ff5_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/regex-2026.7.19-py311h19352d5_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/rhash-1.4.6-h86ecc28_1.conda
+      - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/ripgrep-15.2.0-h1ebd7d5_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/rocksdb-10.6.2-h2271b3b_0_default.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/rpds-py-2026.6.3-py311h3b69377_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/ruamel.yaml-0.17.40-py311hcd402e7_0.conda
@@ -1347,6 +1349,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/readline-8.3-h46df422_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/regex-2026.7.19-py311hc949640_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/rhash-1.4.6-h5505292_1.conda
+      - conda: https://conda.anaconda.org/conda-forge/osx-arm64/ripgrep-15.2.0-h748bcf4_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/rocksdb-10.6.2-h54cb789_0_default.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/rpds-py-2026.6.3-py311haff49d3_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/ruamel.yaml-0.17.40-py311h05b510d_0.conda
@@ -1700,6 +1703,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/win-64/rapidjson-1.1.0.post20240409-he0c23c2_2.conda
       - conda: https://conda.anaconda.org/conda-forge/win-64/re2-2025.11.05-haef9524_2.conda
       - conda: https://conda.anaconda.org/conda-forge/win-64/regex-2026.7.19-py311h3485c13_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/win-64/ripgrep-15.2.0-h77a83cd_0.conda
       - conda: https://conda.anaconda.org/conda-forge/win-64/rocksdb-10.6.2-h6b9cf66_0_default.conda
       - conda: https://conda.anaconda.org/conda-forge/win-64/rpds-py-2026.6.3-py311h7337c20_0.conda
       - conda: https://conda.anaconda.org/conda-forge/win-64/ruamel.yaml-0.17.40-py311ha68e1ae_0.conda
@@ -6338,6 +6342,20 @@ packages:
   purls: []
   size: 193775
   timestamp: 1748644872902
+- conda: https://conda.anaconda.org/conda-forge/linux-64/ripgrep-15.2.0-hdab8a38_0.conda
+  sha256: def033b4a210d4b60361899491dc50dfe99fb18006717849e4478af9ec2c310c
+  md5: 72455858a773400fd85c72ac753e8b2f
+  depends:
+  - __glibc >=2.17,<3.0.a0
+  - libgcc >=14
+  constrains:
+  - __glibc >=2.17
+  license: MIT
+  license_family: MIT
+  purls: []
+  run_exports: {}
+  size: 1700246
+  timestamp: 1784215880252
 - conda: https://conda.anaconda.org/conda-forge/linux-64/rocksdb-10.6.2-h13d676d_0_default.conda
   sha256: 13b828417b82f77e2028cff5168f4302008d487268ae9a404ea296afb7c7bd9e
   md5: 4d924c17b62d2bcc88d9187310b0974e
@@ -11620,6 +11638,19 @@ packages:
   purls: []
   size: 207475
   timestamp: 1748644952027
+- conda: https://conda.anaconda.org/conda-forge/linux-aarch64/ripgrep-15.2.0-h1ebd7d5_0.conda
+  sha256: 848f5d37c324d229030b8d56a9927400619be7fc767dae04b6fca3133989802a
+  md5: a0753ffef68bfd3d8b4f71b53a07cead
+  depends:
+  - libgcc >=14
+  constrains:
+  - __glibc >=2.17
+  license: MIT
+  license_family: MIT
+  purls: []
+  run_exports: {}
+  size: 1617961
+  timestamp: 1784215849684
 - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/rocksdb-10.6.2-h2271b3b_0_default.conda
   sha256: 9ee9cce1102d2bd8a6556c7a63de6251278368b4afbfd254d9fbb108651114a3
   md5: f833e093cdeef603f50101ee67a36241
@@ -18563,6 +18594,19 @@ packages:
   purls: []
   size: 185448
   timestamp: 1748645057503
+- conda: https://conda.anaconda.org/conda-forge/osx-arm64/ripgrep-15.2.0-h748bcf4_0.conda
+  sha256: c939ef8e715948088d8d901258d046c9f4b6e2aee3ebb516bbe7537f0445b8aa
+  md5: 68334cc77db99f6935eec9c8ee6525c4
+  depends:
+  - __osx >=11.0
+  constrains:
+  - __osx >=11.0
+  license: MIT
+  license_family: MIT
+  purls: []
+  run_exports: {}
+  size: 1482864
+  timestamp: 1784217058878
 - conda: https://conda.anaconda.org/conda-forge/osx-arm64/rocksdb-10.6.2-h54cb789_0_default.conda
   sha256: d0f53ab5a92bc010a4cd0ad6c41d30900bb0851dbe093e61783793cb110ecc0a
   md5: 28527f38348c3d19473ae493a4d10059
@@ -22427,6 +22471,19 @@ packages:
   run_exports: {}
   size: 385325
   timestamp: 1784433332333
+- conda: https://conda.anaconda.org/conda-forge/win-64/ripgrep-15.2.0-h77a83cd_0.conda
+  sha256: 59338da1c205b10856ae5f65f7c0d9a092b8c7f8664cf92635831ea62830a9a0
+  md5: 1a9d1e0895681c04ab3a248455f8b945
+  depends:
+  - ucrt >=10.0.20348.0
+  - vc >=14.3,<15
+  - vc14_runtime >=14.44.35208
+  license: MIT
+  license_family: MIT
+  purls: []
+  run_exports: {}
+  size: 1663391
+  timestamp: 1784216025070
 - conda: https://conda.anaconda.org/conda-forge/win-64/rocksdb-10.6.2-h6b9cf66_0_default.conda
   sha256: 2c9b207b20b88ba28e86a1bdae49e291dbe14dbf0c0276915910a0603a45e532
   md5: 4e2dcb2ac158e83b4fbabbf700b626e7
