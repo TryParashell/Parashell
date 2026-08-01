@@ -24,6 +24,7 @@ cp ${conda_env}/bin_tmp/pyside6-rcc ${conda_env}/bin/
 cp ${conda_env}/bin_tmp/gmsh ${conda_env}/bin/
 cp ${conda_env}/bin_tmp/dot ${conda_env}/bin/
 cp ${conda_env}/bin_tmp/unflatten ${conda_env}/bin/
+cp ${conda_env}/bin_tmp/rg ${conda_env}/bin/
 rm -rf ${conda_env}/bin_tmp
 
 sed -i '1s|.*|#!/usr/bin/env python|' ${conda_env}/bin/pip

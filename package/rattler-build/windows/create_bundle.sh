@@ -21,6 +21,7 @@ cp -a ${conda_env}/Library/bin/ccx.exe ${copy_dir}/bin
 cp -a ${conda_env}/Library/bin/gmsh.exe ${copy_dir}/bin
 cp -a ${conda_env}/Library/bin/dot.exe ${copy_dir}/bin
 cp -a ${conda_env}/Library/bin/unflatten.exe ${copy_dir}/bin
+cp -a ${conda_env}/Library/bin/rg.exe ${copy_dir}/bin
 cp -a ${conda_env}/Library/mingw-w64/bin/* ${copy_dir}/bin
 # copy resources -- perhaps needs reduction
 cp -a ${conda_env}/Library/share ${copy_dir}/share

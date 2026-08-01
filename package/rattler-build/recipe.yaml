@@ -183,6 +183,7 @@ requirements:
     - pyyaml
     - qt6-main>=6.11,<6.12
     - requests
+    - ripgrep>=15.1,<16
     - scipy
     - sentry-sdk
     - sympy

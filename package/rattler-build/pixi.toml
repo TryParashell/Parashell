@@ -21,6 +21,10 @@ parashell = { path = "." }
 flask = "*"
 sentry-sdk = "*"
 pyjwt = "*"
+ripgrep = ">=15.1,<16"
+
+[feature.freecad.pypi-dependencies]
+semgrep = "==1.172.0"
 
 [feature.freecad.target.linux-64.dependencies]
 uvloop = "*"
