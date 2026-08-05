@@ -63,6 +63,50 @@ fi
 mkdir -p Parashell.app/Contents/Frameworks
 cp -R "${sparkle_dir}/Sparkle.framework" Parashell.app/Contents/Frameworks/
 
+gui_dylib="${conda_env}/lib/libFreeCADGui.dylib"
+gui_dylib_dir="$(cd "$(dirname "${gui_dylib}")" && pwd)"
+executable_dir="$(cd "${conda_env}/bin" && pwd)"
+sparkle_rpath="@loader_path/../../Frameworks"
+
+if [ ! -f "${gui_dylib}" ]; then
+    echo "Expected ${gui_dylib} in the bundle but it is missing; the macOS bundle cannot launch."
+    exit 1
+fi
+
+sparkle_install_name="$(otool -L "${gui_dylib}" | sed -n 's|^[[:space:]]*@rpath/\(Sparkle\.framework/[^ ]*\).*|\1|p' | head -n 1)"
+if [ -z "${sparkle_install_name}" ]; then
+    echo "libFreeCADGui.dylib does not link against Sparkle; the in-app auto-updater is missing from this build."
+    exit 1
+fi
+
+if ! otool -l "${gui_dylib}" | grep -qF "path ${sparkle_rpath} "; then
+    echo "Adding ${sparkle_rpath} to libFreeCADGui.dylib so Sparkle resolves inside the bundle..."
+    install_name_tool -add_rpath "${sparkle_rpath}" "${gui_dylib}"
+    codesign --force --sign - "${gui_dylib}"
+fi
+
+sparkle_resolved=""
+for rpath in $(otool -l "${gui_dylib}" | awk '/cmd LC_RPATH/ {found=1; next} found && $1 == "path" {print $2; found=0}'); do
+    case "${rpath}" in
+        @loader_path*) candidate="${gui_dylib_dir}${rpath#@loader_path}/${sparkle_install_name}" ;;
+        @executable_path*) candidate="${executable_dir}${rpath#@executable_path}/${sparkle_install_name}" ;;
+        *) candidate="${rpath}/${sparkle_install_name}" ;;
+    esac
+    if [ -f "${candidate}" ]; then
+        sparkle_resolved="${candidate}"
+        break
+    fi
+done
+
+if [ -z "${sparkle_resolved}" ]; then
+    echo "libFreeCADGui.dylib cannot resolve @rpath/${sparkle_install_name} inside the bundle."
+    echo "Searched LC_RPATH entries:"
+    otool -l "${gui_dylib}" | awk '/cmd LC_RPATH/ {found=1; next} found && $1 == "path" {print "  " $2; found=0}'
+    exit 1
+fi
+
+echo "Sparkle resolves to ${sparkle_resolved}"
+
 # Add deployment target suffix to artifact name (e.g., "-macOS11" or "-macOS15")
 deploy_target="${MACOS_DEPLOYMENT_TARGET:-11.0}"
 version_name="Parashell_${BUILD_TAG}-macOS${deploy_target%%.*}-$(uname -m)"
