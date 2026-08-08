@@ -15,6 +15,10 @@ on:
         description: "Release tag to attach the experimental artifacts to"
         required: true
         type: string
+      release_type:
+        description: "Release type; experimental artifacts are permitted only for development releases"
+        required: true
+        type: string
       arch:
         description: "Target architecture name used in artifact file names (x86_64 or arm64)"
         required: true
@@ -48,6 +52,9 @@ permissions:
 
 jobs:
   Build:
+    # Keep this workflow safe if it is called from a future release workflow without the caller's
+    # production guard. Production releases must not contain experimental LibPack artifacts.
+    if: inputs.release_type == 'dev'
     runs-on: ${{ inputs.runner }}
     # Experimental platform: never block the release on a failure here.
     continue-on-error: true

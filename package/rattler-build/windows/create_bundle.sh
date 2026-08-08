@@ -1,7 +1,40 @@
 #!/bin/bash
 
+# RELEASE_TYPE is required for uploaded releases: production emits a .zip archive, while dev
+# preserves the existing .7z development artifact format.
+
 set -e
 set -x
+
+# An upload is a release operation. Requiring an explicit type there prevents a future workflow
+# from silently falling back to the development-only 7z format for a production release.
+if [ "${UPLOAD_RELEASE:-false}" = "true" ] && [ -z "${RELEASE_TYPE:-}" ]; then
+    echo "RELEASE_TYPE must be set to 'dev' or 'production' when UPLOAD_RELEASE is true." >&2
+    exit 2
+fi
+
+RELEASE_TYPE="${RELEASE_TYPE:-dev}"
+case "${RELEASE_TYPE}" in
+    production)
+        archive_extension="zip"
+        archive_type="zip"
+        ;;
+    dev)
+        archive_extension="7z"
+        archive_type="7z"
+        ;;
+    *)
+        echo "Unsupported RELEASE_TYPE: ${RELEASE_TYPE}. Expected 'dev' or 'production'." >&2
+        exit 2
+        ;;
+esac
+
+# This inexpensive mode is used to verify release archive selection without a built bundle or a
+# Windows conda environment. Production archives must remain broadly extractable .zip files.
+if [ "${1:-}" = "--print-archive-extension" ]; then
+    printf '%s\n' "${archive_extension}"
+    exit 0
+fi
 
 conda_env="$(pwd)/../.pixi/envs/default/"
 conda_env="${conda_env//\\//}"
@@ -154,9 +187,9 @@ if ! "$SIGN_DIR/bin/ParashellCmd.exe" --safe-mode --console "import pivy; from p
   exit 1
 fi
 
-7z a -t7z -mx9 -mmt=${NUMBER_OF_PROCESSORS} ${version_name}.7z ${version_name} -bb
+7z a -t${archive_type} -mx9 -mmt=${NUMBER_OF_PROCESSORS} ${version_name}.${archive_extension} ${version_name} -bb
 # create hash
-sha256sum ${version_name}.7z > ${version_name}.7z-SHA256.txt
+sha256sum ${version_name}.${archive_extension} > ${version_name}.${archive_extension}-SHA256.txt
 
 if [ "${MAKE_INSTALLER}" == "true" ]; then
     FILES_FREECAD="$(cygpath -w $(pwd))\\${version_name}"
@@ -189,7 +222,7 @@ fi
 
 if [ "${UPLOAD_RELEASE}" == "true" ]; then
     echo "Uploading the release..."
-    gh release upload --clobber ${BUILD_TAG} "${version_name}.7z" "${version_name}.7z-SHA256.txt"
+    gh release upload --clobber ${BUILD_TAG} "${version_name}.${archive_extension}" "${version_name}.${archive_extension}-SHA256.txt"
     if [ "${MAKE_INSTALLER}" == "true" ]; then
         gh release upload --clobber ${BUILD_TAG} "${version_name}-installer.exe" "${version_name}-installer.exe-SHA256.txt"
     fi
